@@ -11,7 +11,7 @@ import ProductCategory from "./pages/admin/ProductCategory.jsx";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/MiniCapstone">
       <Routes>
         <Route
           path="/"
