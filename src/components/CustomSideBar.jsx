@@ -21,11 +21,10 @@ export default function CustomSideBar() {
   const navigate = useNavigate();
   const sidebarContent = [
     { name: "Dashboard", path: "dashboard" },
-    { name: "Order Status", path: "order" },
+    { name: "Order Status", path: "order-status" },
     { name: "Inventory", path: "inventory" },
     { name: "Sales History", path: "sales-history" },
     { name: "Activity History", path: "activity-history" },
-    { name: "Product Category", path: "product-category" },
   ];
   return (
     <Sidebar className="border-r">
@@ -43,17 +42,18 @@ export default function CustomSideBar() {
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  side="top"
+                  side="right"
                   className="w-[--radix-popper-anchor-width]"
                 >
-                  <DropdownMenuItem>
+                  <DropdownMenuItem className="flex-1 cursor-pointer">
                     <span>Account</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem className="flex-1 cursor-pointer">
                     <span>Billing</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => navigate("/", { replace: true })}
+                    className="flex-1 cursor-pointer"
+                    onClick={() => navigate("/login", { replace: true })}
                   >
                     <span>Logout</span>
                   </DropdownMenuItem>

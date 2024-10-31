@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 import daisyui from "daisyui";
 import tailwindcssAnimate from "tailwindcss-animate";
+import tailwindScroollbarDaisyui from "tailwind-scrollbar-daisyui";
 export default {
 	darkMode: ["class"],
 	content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -84,5 +85,5 @@ export default {
 			"sunset",
 		],
 	},
-	plugins: [daisyui, tailwindcssAnimate],
+	plugins: [daisyui, tailwindcssAnimate, tailwindScroollbarDaisyui],
 };

@@ -12,19 +12,23 @@ export default function DashboardCards({
   description,
   content,
   footer,
+  ...props
 }) {
   return (
-    <Card className="h-fit w-full ring-1 ring-black dark:ring-neutral-800">
-      <CardHeader>
-        <CardTitle className="flex items-center text-lg font-semibold">
+    <Card
+      className="h-fit w-full cursor-pointer ring-1 ring-black dark:ring-neutral-800"
+      {...props}
+    >
+      <CardHeader className="p-2">
+        <CardTitle className="flex items-center p-2 text-lg font-semibold">
           {title}
         </CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-2">
         <section>{content}</section>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="p-2">
         <section>{footer}</section>
       </CardFooter>
     </Card>

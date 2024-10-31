@@ -18,13 +18,13 @@ export default function AdminPage() {
             <NavigationBar
               triggerButton={
                 <SidebarTrigger
-                  className="btn btn-circle btn-ghost text-accent duration-300"
+                  className="btn btn-ghost bg-accent text-primary duration-300"
                   icon={<Logs className="size-96" />} // Change the size here
                 />
               }
             />
 
-            <main className="flex h-screen w-full overflow-hidden bg-primary">
+            <main className="scrollbar scrollbar-thumb-gray-900 scrollbar-track-gray-100 flex h-screen w-full overflow-auto bg-primary">
               <Outlet />
             </main>
           </section>

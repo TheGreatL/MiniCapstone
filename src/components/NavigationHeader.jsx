@@ -11,12 +11,11 @@ export default function NavigationBar({ triggerButton }) {
         </div>
         <div className="navbar-end">
           <button className="btn btn-circle btn-ghost text-accent">
-            <Search />
-          </button>
-          <button className="btn btn-circle btn-ghost text-accent">
             <div className="indicator">
               <Bell />
-              <span className="badge indicator-item badge-accent badge-xs"></span>
+              <span className="badge indicator-item badge-accent badge-xs text-center">
+                1
+              </span>
             </div>
           </button>
         </div>

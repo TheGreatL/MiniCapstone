@@ -1,4 +1,3 @@
-import React from "react";
 import { addDays, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -9,13 +8,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-export default function DateRangePicker() {
-  const [date, setDate] = React.useState({
-    from: new Date(2024, 0, 5),
-    to: addDays(new Date(2024, 0, 5), 35),
-  });
-
+import PropTypes from "prop-types";
+export default function DateRangePicker({ setDate, date }) {
   return (
     <div className="grid gap-2">
       <Popover>
@@ -75,3 +69,7 @@ export default function DateRangePicker() {
     </div>
   );
 }
+DateRangePicker.propTypes = {
+  setDate: PropTypes.func,
+  date: PropTypes.object,
+};
