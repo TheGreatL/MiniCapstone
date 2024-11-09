@@ -1,4 +1,5 @@
-import { Search, Bell } from "lucide-react";
+import { Bell } from "lucide-react";
+import PropTypes from "prop-types";
 export default function NavigationBar({ triggerButton }) {
   return (
     <div className="flex w-full">
@@ -23,3 +24,6 @@ export default function NavigationBar({ triggerButton }) {
     </div>
   );
 }
+NavigationBar.propTypes = {
+  triggerButton: PropTypes.object,
+};

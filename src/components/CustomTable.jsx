@@ -9,46 +9,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-
+import { formatCurrency } from "@/lib/functions";
+import CustomStatusBadge from "./CustomStatusBadge";
+import CustomSelect from "./CustomSelect";
 const CustomTable = ({ columns, data, columnWidths }) => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [filter, setFilter] = useState("");
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-PH", {
-      style: "currency",
-      currency: "PHP",
-    }).format(amount);
-  };
-
-  const getStatusBadge = (status) => {
-    const colors = {
-      failed: " bg-error text-white ",
-      "on going": "bg-info text-white",
-      complete: "bg-success text-white",
-    };
-
-    return (
-      <Badge
-        variant="outline"
-        className={`${colors[status.toLowerCase()]} m-0 rounded-xl border-none tracking-wider`}
-      >
-        {status}
-      </Badge>
-    );
-  };
 
   const filteredData = data.filter((item) =>
     Object.values(item).some((value) =>
@@ -57,7 +28,6 @@ const CustomTable = ({ columns, data, columnWidths }) => {
   );
 
   // Column width configurations
-
   const renderCellContent = (row, column) => {
     switch (column.toUpperCase()) {
       case "OR DATE":
@@ -68,11 +38,13 @@ const CustomTable = ({ columns, data, columnWidths }) => {
         return <span className="text-sm">{row.s_name}</span>;
       case "PROGRAM":
         return row.s_program;
-      case "OR NO":
+      case "OR NO/REFERENCE":
         return row.or_no;
       case "STATUS":
         return (
-          <div className="flex justify-start">{getStatusBadge(row.status)}</div>
+          <div className="flex justify-center">
+            <CustomStatusBadge status={row.status} />
+          </div>
         );
       case "SALES":
         return formatCurrency(row.sales);
@@ -90,28 +62,31 @@ const CustomTable = ({ columns, data, columnWidths }) => {
   };
 
   return (
-    <div className="m-2 flex-1 rounded-xl bg-white">
-      <div className="flex items-center space-x-2 p-4">
+    <section className="m-2 flex-1 rounded-xl bg-white">
+      <header className="flex items-center space-x-2 p-4 outline">
         <Input
           placeholder="Search..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           className="max-w-sm"
         />
-        <Select defaultValue="all">
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="failed">Failed</SelectItem>
-            <SelectItem value="on-going">On Going</SelectItem>
-            <SelectItem value="complete">Complete</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+        <div className="w-44">
+          <CustomSelect
+            onItemSelected={() => {}}
+            label="Status"
+            options={[
+              { value: "Completed", id: "ORDER_200" },
+              { value: "On Going", id: "ORDER_600" },
+              { value: "Failed", id: "ORDER_400" },
+            ]}
+          />
+        </div>
+        <Button variant="ghost" size="icon" className="flex-1">
+          Complete
+        </Button>
+      </header>
 
-      <div className="flex h-[30rem] flex-1">
+      <main className="flex h-[30rem] flex-1">
         <div className="w-full">
           <div className="sticky top-0 z-10 border-b bg-white">
             <Table>
@@ -134,7 +109,7 @@ const CustomTable = ({ columns, data, columnWidths }) => {
                   {columns.map((column) => (
                     <TableHead
                       key={column}
-                      className={`${columnWidths[column.toUpperCase()]} text-left font-medium`}
+                      className={`${columnWidths[column.toUpperCase()]} text-left font-medium outline`}
                     >
                       {column.toUpperCase()}
                     </TableHead>
@@ -177,9 +152,9 @@ const CustomTable = ({ columns, data, columnWidths }) => {
             </Table>
           </ScrollArea>
         </div>
-      </div>
+      </main>
 
-      <div className="flex items-center justify-between p-4">
+      <footer className="flex items-center justify-between p-4">
         <div className="text-sm text-gray-500">
           {selectedRows.length} of {filteredData.length} row(s) selected.
         </div>
@@ -199,8 +174,8 @@ const CustomTable = ({ columns, data, columnWidths }) => {
             <Button variant="outline">{">>"}</Button>
           </div>
         </div>
-      </div>
-    </div>
+      </footer>
+    </section>
   );
 };
 CustomTable.propTypes = {

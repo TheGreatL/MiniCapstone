@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
+import PropTypes from "prop-types";
 export default function DashboardCards({
   title,
   description,
@@ -15,10 +15,7 @@ export default function DashboardCards({
   ...props
 }) {
   return (
-    <Card
-      className="h-fit w-full cursor-pointer ring-1 ring-black dark:ring-neutral-800"
-      {...props}
-    >
+    <Card className="flex-1 cursor-pointer dark:ring-neutral-800" {...props}>
       <CardHeader className="p-2">
         <CardTitle className="flex items-center p-2 text-lg font-semibold">
           {title}
@@ -34,3 +31,10 @@ export default function DashboardCards({
     </Card>
   );
 }
+
+DashboardCards.propTypes = {
+  title: PropTypes.object,
+  description: PropTypes.object,
+  content: PropTypes.any,
+  footer: PropTypes.object,
+};

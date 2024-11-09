@@ -65,14 +65,11 @@ export default function SalesHistory() {
     ACTIONS: "w-[80px]",
   };
   return (
-    <section className="flex h-full flex-1 flex-col gap-3 p-5 lg:flex-col">
-      <div className="flex gap-2">
-        <h1 className="flex-1 text-2xl font-bold text-accent">Sale History</h1>
-      </div>
-      <div className="flex h-full flex-1">
+    <section className="h flex-1 flex-col gap-3 p-2 lg:flex-col">
+      <div className="flex flex-1">
         <CustomTable
           columnWidths={columnWidths}
-          columns={["Or Date", "Or No", "Sales", "Total", "Actions"]}
+          columns={["Or Date", "OR NO/REFERENCE", "Sales", "Total", "Actions"]}
           data={orderStatus}
         />
       </div>
