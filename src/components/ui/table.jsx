@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "./scroll-area";
 
 const Table = React.forwardRef(({ className, ...props }, ref) => (
-  <ScrollArea className="relative z-50 w-full">
+  <ScrollArea className="relative w-full">
     <table
       ref={ref}
       className={cn("w-full caption-bottom text-sm", className)}

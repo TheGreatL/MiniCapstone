@@ -8,6 +8,7 @@ export const usePost = (url, defaultData = []) => {
 
   const postData = async (newData) => {
     try {
+      console.log("New Data", newData);
       setLoading(true);
       const response = await axios.post(url, newData);
 
@@ -15,6 +16,7 @@ export const usePost = (url, defaultData = []) => {
       setLoading(false);
       setError(null);
     } catch (error) {
+      console.log("Error", error);
       const { message, error: serverError } = error.response.data;
       setError({ message: `${serverError} \n ${message}` });
       setLoading(false);

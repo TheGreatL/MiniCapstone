@@ -1,6 +1,8 @@
-import { Bell } from "lucide-react";
 import PropTypes from "prop-types";
+import { Switch } from "@/components/ui/switch";
+import { useTheme } from "@/components/ThemeProvider";
 export default function NavigationBar({ triggerButton }) {
+  const { setTheme } = useTheme();
   return (
     <div className="flex w-full">
       <div className="navbar bg-base-300">
@@ -11,14 +13,20 @@ export default function NavigationBar({ triggerButton }) {
           </span>
         </div>
         <div className="navbar-end">
-          <button className="btn btn-circle btn-ghost text-accent">
-            <div className="indicator">
-              <Bell />
-              <span className="badge indicator-item badge-accent badge-xs text-center">
-                1
-              </span>
-            </div>
-          </button>
+          <Switch
+            title="Toggle theme"
+            onCheckedChange={(value) => {
+              if (value) {
+                document.documentElement.setAttribute("data-theme", "cupcake");
+              } else {
+                document.documentElement.setAttribute(
+                  "data-theme",
+                  "customTheme",
+                );
+              }
+              setTheme(value ? "dark" : "light");
+            }}
+          />
         </div>
       </div>
     </div>

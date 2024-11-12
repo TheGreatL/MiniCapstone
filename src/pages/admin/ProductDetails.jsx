@@ -1,12 +1,12 @@
 import { useFetch } from "@/hooks/useFetch";
 import { useParams } from "react-router-dom";
-import CustomSkeleton from "@/components/CustomSkeleton";
+import CustomSkeleton from "@/components/customs/CustomSkeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatCurrency } from "@/lib/functions";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import CustomCarousell from "@/components/CustomCarousell";
+import CustomCarousell from "@/components/customs/CustomCarousell";
 export default function ProductDetails() {
   const navigate = useNavigate();
   const { productId } = useParams();
@@ -31,7 +31,10 @@ export default function ProductDetails() {
       <ScrollArea className="flex flex-1 flex-col pr-0.5">
         <div className="m-5 flex flex-col gap-2 justify-self-center">
           <CustomCarousell />
-          <span>{!error && !loading && data.data[0].ProductDescription}</span>
+          <span>
+            Product Details {""}
+            {!error && !loading && data.data[0].ProductDescription}
+          </span>
         </div>
         <div className="flex flex-wrap justify-evenly gap-5 py-2 text-black">
           {loading && (
@@ -65,15 +68,18 @@ export default function ProductDetails() {
                       {formatCurrency(product.ProductPrice)}
                     </span>
 
-                    <span className="text-start">
-                      {product.ProductVariantName}
-                    </span>
+                    {product.ProductVariantName !== "NULL" && (
+                      <span className="text-start">
+                        {product.ProductVariantName}
+                      </span>
+                    )}
+
                     <div className="card-actions mt-1 flex justify-center text-xs">
                       <Button className="btn btn-primary flex-1">
                         Add To Cart
                       </Button>
                       <Button className="btn btn-primary flex-1">
-                        Add To Cart
+                        Process Order
                       </Button>
                     </div>
                   </div>

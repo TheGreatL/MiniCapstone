@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import AVATAR from "../assets/avatar.jpg";
+import AVATAR from "../../assets/avatar.jpg";
 import {
   Carousel,
   CarouselContent,

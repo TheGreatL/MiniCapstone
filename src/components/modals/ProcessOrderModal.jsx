@@ -84,7 +84,7 @@ const ProcessOrderModal = forwardRef(function ProcessOrderModal(
             handleInputChange={handleProductGenderChange}
             handleInputBlur={handleProductGenderBlur}
             hasError={productGenderHasError}
-            id={"product-gender"}
+            id={"product-variants"}
             placeholder={"Product Gender"}
             options={[
               { label: "Male", value: "ML" },
@@ -177,8 +177,7 @@ const ProcessOrderModal = forwardRef(function ProcessOrderModal(
             return;
           }
           resetAllState();
-          handleOrderSubmit(e, selectedProduct, totalOrder, buttonAction);
-
+          handleOrderSubmit(e, selectedProduct, buttonAction);
           e.target.reset();
         }}
         method="dialog"
@@ -234,7 +233,6 @@ const ProcessOrderModal = forwardRef(function ProcessOrderModal(
           >
             Cancel
           </button>
-          {console.log("Button Action", buttonAction)}
           {buttonAction === "ProcessOrder" ? (
             <button className="btn btn-primary tracking-wider text-white">
               Submit

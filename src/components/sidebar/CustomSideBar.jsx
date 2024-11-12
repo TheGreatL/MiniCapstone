@@ -33,7 +33,7 @@ export default function CustomSideBar() {
   const { open } = useSidebar();
   const sidebarContent = [
     { name: "Dashboard", path: "dashboard", icon: <House /> },
-    { name: "Order Status", path: "order-status", icon: <ChartPie /> },
+    { name: "Orders", path: "orders", icon: <ChartPie /> },
     { name: "Inventory", path: "inventory", icon: <Shirt /> },
     { name: "Sales History", path: "sales-history", icon: <BadgeDollarSign /> },
     { name: "Activity History", path: "activity-history", icon: <Activity /> },
@@ -42,7 +42,7 @@ export default function CustomSideBar() {
     <Sidebar className="border-r" collapsible="icon">
       <DialogTitle className="sr-only">Navigation Menu</DialogTitle>
       <DialogDescription className="sr-only">{"asdasds"}</DialogDescription>
-      <SidebarContent className="flex h-screen bg-neutral py-4">
+      <SidebarContent className="light:bg-neutral flex h-screen py-4 dark:bg-black">
         <SidebarHeader className="p-2">
           <SidebarMenu>
             <SidebarMenuItem>

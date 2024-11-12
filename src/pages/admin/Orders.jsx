@@ -1,10 +1,8 @@
 import { useFetch } from "@/hooks/useFetch";
-// import { columnWidths, orderStatus } from "@/lib/functions";
-// import CustomTable from "@/components/CustomTable";
 import { format } from "date-fns";
 import { formatCurrency } from "@/lib/functions";
 import { ArrowUpDown } from "lucide-react";
-import CustomStatusBadge from "@/components/CustomStatusBadge";
+import CustomStatusBadge from "@/components/customs/CustomStatusBadge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,8 +14,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import MyCustomTable from "@/components/MyCustomTable";
+import MyCustomTable from "@/components/table/OrdersTable";
+import CustomSkeleton from "@/components/customs/CustomSkeleton";
+import { useNavigate } from "react-router-dom";
+import OrdersTable from "@/components/table/OrdersTable";
 export default function OrderStatus() {
+  const navigate = useNavigate();
   const {
     data: orderedData,
     loading,
@@ -103,7 +105,7 @@ export default function OrderStatus() {
     },
     {
       accessorKey: "s_name",
-      // header: () => <div className="text-center">Student Name</div>,
+
       header: ({ column }) => {
         return (
           <div className="flex justify-center">
@@ -111,7 +113,6 @@ export default function OrderStatus() {
               variant="ghost"
               onClick={() => {
                 column.toggleSorting(column.getIsSorted() === "asc");
-                console.log(column.getIsSorted());
               }}
             >
               Student Name
@@ -176,7 +177,7 @@ export default function OrderStatus() {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const payment = row.original;
+        const orderNumber = row.getValue("or_no");
 
         return (
           <DropdownMenu>
@@ -189,13 +190,15 @@ export default function OrderStatus() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(payment.id)}
+                onClick={() =>
+                  navigate(`/admin/orders/order-details/${orderNumber}`)
+                }
               >
-                Copy payment ID
+                View Order Details
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem>
+              <DropdownMenuItem>View Order Breakdown</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -205,24 +208,14 @@ export default function OrderStatus() {
   return (
     <section className="flex h-full flex-1 flex-col gap-3 p-2 lg:flex-col">
       <div className="flex flex-1">
+        {loading && <CustomSkeleton times={1} />}
+        {error && <div>Error: {error.message}</div>}
         {!loading && !error && (
-          // <CustomTable
-          //   columnWidths={columnWidths}
-          //   columns={[
-          //     "OR DATE",
-          //     "STUDENT NO",
-          //     "STUDENT NAME",
-          //     "PROGRAM",
-          //     "OR NO/REFERENCE",
-          //     "STATUS",
-          //     "SALES",
-          //     "TOTAL",
-          //     "Actions",
-          //   ]}
-          //   data={newOrderedData.reverse()}
-          // />
-          <MyCustomTable data={newOrderedData} columns={orderStatusColumn} />
-          // <CollapsibleTable />
+          <OrdersTable
+            data={newOrderedData}
+            columns={orderStatusColumn}
+            input_search="s_name"
+          />
         )}
       </div>
     </section>

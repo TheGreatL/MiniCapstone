@@ -1,11 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import CustomSelect from "@/components/CustomSelect";
+import CustomSelect from "@/components/customs/CustomSelect";
 import { Button } from "@/components/ui/button";
 import ProcessOrderModal from "@/components/modals/ProcessOrderModal";
 import { useFetch } from "@/hooks/useFetch";
 import { useRef } from "react";
-import CustomSkeleton from "@/components/CustomSkeleton";
+import CustomSkeleton from "@/components/customs/CustomSkeleton";
 import { useState } from "react";
 import Products from "@/components/Products";
 import { filterData } from "@/lib/functions";
@@ -13,7 +13,9 @@ import { handleOnPostOrder } from "@/lib/handleData";
 import { usePost } from "@/hooks/usePost";
 import { toast } from "sonner";
 import { ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 export default function Inventory() {
+  const navigate = useNavigate();
   const processOrderModalRef = useRef(null);
   const [selectedProduct, setSelectedProduct] = useState({});
   const [search, setSearch] = useState("");
@@ -32,15 +34,13 @@ export default function Inventory() {
     "Error posting order",
   );
 
-  // console.log("Posted Data", postedData);
-  // console.log("Post Error ", postError);
   function handleSearchProductReset() {
     setSearch("");
   }
-  async function handleOrderSubmit(event, selectedProduct, totalOrder, action) {
+  async function handleOrderSubmit(event, selectedProduct, action) {
     const formData = new FormData(event.target);
     if (action === "ProcessOrder") {
-      await postOrder(handleOnPostOrder(formData, selectedProduct, totalOrder));
+      await postOrder(handleOnPostOrder(formData, selectedProduct));
     } else {
       console.log("Added To Cart");
     }
@@ -69,7 +69,6 @@ export default function Inventory() {
     { id: 7, value: "OTHER UNIFORMS" },
   ];
 
-  const category = ["Daily Uniforms"];
   if (postLoading) {
     return <CustomSkeleton times={20} />;
   }
@@ -109,10 +108,16 @@ export default function Inventory() {
                 label={"Programs"}
               />
 
-              <Button className="bg-accent text-black duration-300 hover:bg-gray-200">
+              <Button
+                onClick={() => navigate("/admin/inventory/add-product")}
+                className="bg-accent text-black duration-300 hover:bg-gray-200"
+              >
                 Add Product
               </Button>
-              <Button className="bg-accent text-black duration-300 hover:bg-gray-200">
+              <Button
+                size="lg"
+                className="bg-accent text-black duration-300 hover:bg-gray-200"
+              >
                 <ShoppingCart />
               </Button>
             </div>

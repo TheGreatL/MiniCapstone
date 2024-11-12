@@ -15,7 +15,10 @@ export default function DashboardCards({
   ...props
 }) {
   return (
-    <Card className="flex-1 cursor-pointer dark:ring-neutral-800" {...props}>
+    <Card
+      className="flex-1 cursor-pointer dark:text-white dark:ring-neutral-800"
+      {...props}
+    >
       <CardHeader className="p-2">
         <CardTitle className="flex items-center p-2 text-lg font-semibold">
           {title}

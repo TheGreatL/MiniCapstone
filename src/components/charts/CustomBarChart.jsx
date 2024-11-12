@@ -36,7 +36,7 @@ const chartConfig = {
   },
 };
 
-export default function BarChartComp({ date }) {
+export default function CustomBarChart({ date }) {
   return (
     <>
       <DashboardCards
@@ -66,7 +66,7 @@ export default function BarChartComp({ date }) {
         content={
           <span className="stat-value">
             {
-              <ChartContainer config={chartConfig}>
+              <ChartContainer className="h-[10rem] w-full" config={chartConfig}>
                 <BarChart accessibilityLayer data={chartData}>
                   <CartesianGrid vertical={false} />
                   <XAxis
@@ -105,6 +105,6 @@ export default function BarChartComp({ date }) {
     </>
   );
 }
-BarChartComp.propTypes = {
+CustomBarChart.propTypes = {
   date: PropTypes.object,
 };

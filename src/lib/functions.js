@@ -1,6 +1,5 @@
 export const calculateDifference = (date) => {
   if (date !== undefined && date.from !== undefined && date.to !== undefined) {
-    console.log(date.from, date.to);
     const from = new Date(date.from);
     const to = new Date(date.to);
     const diff = to.getTime() - from.getTime();

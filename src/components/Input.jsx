@@ -3,6 +3,8 @@ export default function Input({
   value,
   type,
   id,
+  labelStyle = "text-black",
+
   handleOnBlur,
   handleOnChange,
   placeholder,
@@ -12,7 +14,7 @@ export default function Input({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <label className="label label-text" htmlFor={id}>
+      <label className={`label label-text ${labelStyle}`} htmlFor={id}>
         {placeholder}
       </label>
       <input
@@ -45,4 +47,5 @@ Input.propTypes = {
   className: PropTypes.string,
   isError: PropTypes.bool,
   value: PropTypes.any,
+  labelStyle: PropTypes.string,
 };

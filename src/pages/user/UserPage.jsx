@@ -211,12 +211,7 @@ function UserPage() {
                 </div>
               </div>
             </div>
-            // <div key={index} className="card w-96 bg-base-100 shadow-xl">
-            //   Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            //   Blanditiis quia ipsa beatae perferendis neque sequi dolor quidem,
-            //   pariatur sapiente magni, aperiam omnis explicabo numquam illo
-            //   debitis veniam eos laboriosam. Sequi.
-            // </div>
+
           ))}
         </div>
       </ScrollArea>

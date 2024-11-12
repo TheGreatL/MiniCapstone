@@ -1,6 +1,6 @@
-
 import DashboardCards from "@/components/DashboardCards";
 import CustomPieChart from "@/components/charts/CustomPieChart";
+import CustomBarChart from "@/components/charts/CustomBarChart";
 import DashboardCalendar from "@/components/DashboardCalendar";
 import { Shirt, PhilippinePeso } from "lucide-react";
 import CustomAreaChart from "@/components/charts/CustomAreaChart";
@@ -23,6 +23,7 @@ export default function Dashboard() {
       icon: <Shirt />,
       content: "12",
       footer: `${isNaN(dayDifference) ? dayDifference : `Last ${dayDifference} Days`}  `,
+      location: "/admin/orders",
     },
     {
       title: "Total Sales",
@@ -30,6 +31,7 @@ export default function Dashboard() {
       icon: <PhilippinePeso />,
       content: "12",
       footer: `${isNaN(dayDifference) ? dayDifference : `Last ${dayDifference} Days`}  `,
+      location: "/admin/sales-history",
     },
   ];
   return (
@@ -39,19 +41,23 @@ export default function Dashboard() {
           <h1 className="flex-1 text-xl font-bold text-accent">Dashboard</h1>
           <DashboardCalendar setDate={setDate} date={date} />
         </section>
-        <section className="flex max-h-56 flex-shrink-0 flex-grow flex-col justify-between gap-2 overflow-auto scrollbar scrollbar-track-gray-100 scrollbar-thumb-gray-900 lg:flex-row">
+        <section className="flex max-h-56 flex-shrink-0 flex-grow flex-col justify-between gap-2 overflow-auto scrollbar scrollbar-track-gray-100 scrollbar-thumb-gray-900 dark:text-white lg:flex-row">
           {dashBoardCardsData.map((item) => (
             <DashboardCards
               key={item.title}
-              onClick={() => navigate("/admin/sales-history")}
+              onClick={() => navigate(item.location)}
               title={
                 <>
-                  <p className="stat-title flex-1">{item.title}</p>
+                  <p className="stat-title flex-1 dark:text-white">
+                    {item.title}
+                  </p>
                   {item.icon}
                 </>
               }
               description={
-                <span className="stat-desc">{item.description}</span>
+                <span className="stat-desc dark:text-white">
+                  {item.description}
+                </span>
               }
               content={<span className="stat-value">{item.content}</span>}
               footer={<span className="stat-desc">{item.footer}</span>}
@@ -61,7 +67,8 @@ export default function Dashboard() {
         <section className="flex flex-grow flex-col justify-between gap-2 outline lg:flex-row">
           <DashboardCards
             className="flex-1 text-white ring-1 ring-black dark:ring-neutral-800"
-            content={<CustomPieChart date={date} />}
+            // content={<CustomBar date={date} />}
+            content={<CustomBarChart date={date} />}
           />
           <DashboardCards
             className="flex-1 text-white ring-1 ring-black dark:ring-neutral-800"

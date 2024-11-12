@@ -1,33 +1,29 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
-import CustomSelect from "./CustomSelect";
+import CustomSelect from "@/components/customs/CustomSelect";
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  // getPaginationRowModel,
   getSortedRowModel,
   getFilteredRowModel,
 } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
 import PropTypes from "prop-types";
+import CustomTable from "./CustomTable";
+import { useUpdate } from "@/hooks/useUpdate";
 
-export default function MyCustomTable({ data, columns }) {
+export default function OrderDetailsTable({
+  data,
+  columns,
+  input_search = "s_name",
+}) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -36,7 +32,6 @@ export default function MyCustomTable({ data, columns }) {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    // getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
@@ -50,16 +45,22 @@ export default function MyCustomTable({ data, columns }) {
       rowSelection,
     },
   });
+  const {
+    data: updateData,
+    loading,
+    error,
+    updateValue,
+  } = useUpdate([], "http://localhost:3000/api/orders/update/status/");
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="z-0 flex flex-1 flex-col text-black">
       <div className="m-4 flex items-center gap-5">
         <div className="flex flex-1 gap-5">
           <Input
             placeholder="Filter Order"
-            value={table.getColumn("s_name")?.getFilterValue() ?? ""}
+            value={table.getColumn(input_search)?.getFilterValue() ?? ""}
             onChange={(event) =>
-              table.getColumn("s_name")?.setFilterValue(event.target.value)
+              table.getColumn(input_search)?.setFilterValue(event.target.value)
             }
             className="flex-1"
           />
@@ -74,14 +75,11 @@ export default function MyCustomTable({ data, columns }) {
               ]}
               onItemSelected={(value) => {
                 table
-                  .getColumn("status")
+                  .getColumn("OrderStatusID")
                   ?.setFilterValue(value === "all" ? "" : value);
               }}
             />
           </div>
-          <Button variant="outline" className="flex-1">
-            Mark Success
-          </Button>
         </div>
 
         <DropdownMenu>
@@ -111,60 +109,14 @@ export default function MyCustomTable({ data, columns }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex h-[48rem] overflow-hidden rounded-md bg-white">
-        <Table className="flex-1">
-          <TableHeader className="sticky top-0 bg-white">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+      <div className="flex h-[30rem] overflow-hidden rounded-md bg-white">
+        <CustomTable columns={columns} table={table} flexRender={flexRender} />
       </div>
     </div>
   );
 }
-MyCustomTable.propTypes = {
+OrderDetailsTable.propTypes = {
   data: PropTypes.array,
   columns: PropTypes.array,
+  input_search: PropTypes.string,
 };

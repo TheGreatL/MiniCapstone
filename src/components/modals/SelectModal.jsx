@@ -6,11 +6,12 @@ export default function SelectModal({
   handleInputBlur,
   options,
   hasError,
+  labelStyle = "text-black",
   ...props
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="label label-text">
+      <label htmlFor={id} className={`label label-text ${labelStyle}`}>
         {placeholder}
       </label>
       <select
@@ -41,4 +42,5 @@ SelectModal.propTypes = {
   handleInputBlur: PropTypes.func,
   handleInputChange: PropTypes.func,
   hasError: PropTypes.bool,
+  labelStyle: PropTypes.string,
 };
