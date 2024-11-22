@@ -36,7 +36,7 @@ const chartConfig = {
   },
 };
 
-export default function CustomBarChart({ date }) {
+export default function CustomBarChart() {
   return (
     <>
       <DashboardCards
@@ -46,23 +46,7 @@ export default function CustomBarChart({ date }) {
             Most Purchased Products
           </p>
         }
-        description={
-          <span className="stat-desc">
-            {" "}
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
-                </>
-              ) : (
-                format(date.from, "LLL dd, y")
-              )
-            ) : (
-              <span>Pick a date</span>
-            )}
-          </span>
-        }
+        description={<span className="stat-desc">Description</span>}
         content={
           <span className="stat-value">
             {

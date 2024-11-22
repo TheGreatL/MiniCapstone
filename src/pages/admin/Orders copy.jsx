@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { formatCurrency } from "@/lib/functions";
 import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MoreHorizontal } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -178,7 +178,7 @@ export default function OrderStatus() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
+                <EllipsisVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

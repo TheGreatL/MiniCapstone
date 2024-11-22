@@ -3,16 +3,9 @@ import { format } from "date-fns";
 import { formatCurrency } from "@/lib/functions";
 import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MoreHorizontal } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import CustomSkeleton from "@/components/customs/CustomSkeleton";
 import { useNavigate } from "react-router-dom";
 import OrdersTable from "@/components/OrdersTable";

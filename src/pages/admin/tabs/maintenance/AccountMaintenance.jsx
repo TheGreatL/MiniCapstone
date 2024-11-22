@@ -4,6 +4,15 @@ import { Button } from "@/components/ui/button";
 import { useFetch } from "@/hooks/useFetch";
 import CustomSkeleton from "@/components/customs/CustomSkeleton";
 import UsersTable from "@/components/table/UsersTable";
+import { EllipsisVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 export default function AccountMaintenance() {
   const {
     data: fetchData,
@@ -53,16 +62,35 @@ export default function AccountMaintenance() {
         return <div className="text-center">{user_role}</div>;
       },
     },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const productID = row.getValue("ProductID");
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <EllipsisVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem>Modify Product</DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
   ];
 
   return (
     <section className="flex flex-1 flex-col gap-3 p-2 text-accent lg:flex-col">
       <div className="flex flex-1 flex-col gap-2 overflow-hidden">
         <ScrollArea className="flex-1 pr-0.5 text-black">
-          <div className="space-x-5">
-            <Button variant="secondary">Add User</Button>
-            <Button variant="secondary">Modify Programs</Button>
-          </div>
           {loading && <CustomSkeleton times={20} />}
           {error && (
             <div className="m-auto text-2xl text-white">
@@ -70,11 +98,17 @@ export default function AccountMaintenance() {
             </div>
           )}
           {!loading && !error && (
-            <UsersTable
-              data={fetchData.data}
-              columns={user_columns}
-              input_search="UserFName"
-            />
+            <>
+              <div className="space-x-5">
+                <Button variant="secondary">Add User</Button>
+                <Button variant="secondary">Modify Programs</Button>
+              </div>
+              <UsersTable
+                data={fetchData.data}
+                columns={user_columns}
+                input_search="UserFName"
+              />
+            </>
           )}
         </ScrollArea>
       </div>

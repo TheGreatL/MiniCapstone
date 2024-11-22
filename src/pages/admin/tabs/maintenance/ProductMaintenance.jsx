@@ -2,7 +2,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { useFetch } from "@/hooks/useFetch";
 import CustomSkeleton from "@/components/customs/CustomSkeleton";
-import { MoreHorizontal } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -92,7 +92,7 @@ export default function ProductMaintenance() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
+                <EllipsisVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -117,20 +117,6 @@ export default function ProductMaintenance() {
       <section className="flex flex-1 flex-col gap-3 p-2 text-accent lg:flex-col">
         <div className="flex flex-1 flex-col gap-2 overflow-hidden">
           <ScrollArea className="flex-1 pr-0.5 text-black">
-            <div className={`${loading && "my-5"} space-x-5`}>
-              <Button
-                onClick={() => navigate("/admin/maintenance/add-product")}
-                variant="secondary"
-              >
-                Add Product
-              </Button>
-              <Button
-                onClick={() => navigate("/admin/maintenance/add-product")}
-                variant="secondary"
-              >
-                Modify Product Details
-              </Button>
-            </div>
             {loading && (
               <>
                 <CustomSkeleton times={20} />
@@ -141,12 +127,29 @@ export default function ProductMaintenance() {
                 {error.message}
               </div>
             )}
-
-            <MaintenanceProductTable
-              data={fetchData.data === undefined ? [] : fetchData.data}
-              columns={inventoryColumns}
-              input_search="ProductName"
-            />
+            {!loading && !error && (
+              <>
+                <div className="space-x-5">
+                  <Button
+                    onClick={() => navigate("/admin/maintenance/add-product")}
+                    variant="secondary"
+                  >
+                    Add Product
+                  </Button>
+                  <Button
+                    onClick={() => navigate("/admin/maintenance/add-inventory")}
+                    variant="secondary"
+                  >
+                    Add Inventory
+                  </Button>
+                </div>
+                <MaintenanceProductTable
+                  data={fetchData.data === undefined ? [] : fetchData.data}
+                  columns={inventoryColumns}
+                  input_search="ProductName"
+                />
+              </>
+            )}
           </ScrollArea>
         </div>
       </section>

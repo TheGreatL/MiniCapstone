@@ -10,7 +10,7 @@ export default function CustomSkeleton({ times = 1 }) {
     );
   }
   return (
-    <div className="flex w-full flex-1 flex-wrap gap-2">
+    <div className="flex w-full flex-1 flex-wrap items-center justify-evenly gap-5">
       {skeleton.map((skeletonItem) => skeletonItem)}
     </div>
   );

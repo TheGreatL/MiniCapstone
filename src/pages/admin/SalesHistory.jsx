@@ -63,7 +63,7 @@ export default function SalesHistory() {
       cell: ({ row }) => {
         const paymentID = row.getValue("PaymentID");
 
-        return <div className="text-left font-medium">{paymentID}</div>;
+        return <div className="text-left">{paymentID}</div>;
       },
     },
     {
@@ -102,35 +102,6 @@ export default function SalesHistory() {
         );
       },
     },
-    // {
-    //   id: "actions",
-    //   enableHiding: false,
-    //   cell: ({ row }) => {
-    //     const payment = row.original;
-
-    //     return (
-    //       <DropdownMenu>
-    //         <DropdownMenuTrigger asChild>
-    //           <Button variant="ghost" className="h-8 w-8 p-0">
-    //             <span className="sr-only">Open menu</span>
-    //             <MoreHorizontal className="h-4 w-4" />
-    //           </Button>
-    //         </DropdownMenuTrigger>
-    //         <DropdownMenuContent align="end">
-    //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-    //           <DropdownMenuItem
-    //             onClick={() => navigator.clipboard.writeText(payment.id)}
-    //           >
-    //             Copy payment ID
-    //           </DropdownMenuItem>
-    //           <DropdownMenuSeparator />
-    //           <DropdownMenuItem>View customer</DropdownMenuItem>
-    //           <DropdownMenuItem>View payment details</DropdownMenuItem>
-    //         </DropdownMenuContent>
-    //       </DropdownMenu>
-    //     );
-    //   },
-    // },
   ];
 
   const [date, setDate] = useState();
@@ -148,7 +119,7 @@ export default function SalesHistory() {
   return (
     <section className="h flex-1 flex-col gap-3 p-2 lg:flex-col">
       <div className="flex flex-1 flex-col">
-        <div className="self-end">
+        <div className="mb-5 self-end">
           <DashboardCalendar setDate={setDate} date={date} />
         </div>
         {loading && <CustomSkeleton times={20} />}

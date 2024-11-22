@@ -1,23 +1,16 @@
 import DashboardCards from "@/components/DashboardCards";
 import CustomBarChart from "@/components/charts/CustomBarChart";
-import DashboardCalendar from "@/components/DashboardCalendar";
-import { Shirt, PhilippinePeso, History, Divide } from "lucide-react";
+
+import { Shirt, PhilippinePeso } from "lucide-react";
 import CustomAreaChart from "@/components/charts/CustomAreaChart";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import {
-  calculateDifference,
-  getCurrentDate,
-  formatCurrency,
-} from "@/lib/functions";
+
+import { formatCurrency } from "@/lib/functions";
 import { useFetch } from "@/hooks/useFetch";
 import CustomSkeleton from "@/components/customs/CustomSkeleton";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [date, setDate] = useState();
-
-  const dayDifference = calculateDifference(date);
 
   const {
     data: salesData,
@@ -34,7 +27,7 @@ export default function Dashboard() {
       description: "Revenue Total",
       icon: <Shirt />,
       content: "12",
-      footer: `${isNaN(dayDifference) ? dayDifference : `Last ${dayDifference} Days`}  `,
+      footer: "Footer",
       location: "/admin/orders",
     },
     {
@@ -42,7 +35,7 @@ export default function Dashboard() {
       description: "Revenue Total",
       icon: <PhilippinePeso />,
       content: 0,
-      footer: `${isNaN(dayDifference) ? dayDifference : `Last ${dayDifference} Days`} `,
+      footer: "Footer",
       location: "/admin/sales-history",
     },
     {
@@ -50,7 +43,7 @@ export default function Dashboard() {
       description: "out of stock",
       icon: <Shirt />,
       content: "12",
-      footer: `${isNaN(dayDifference) ? dayDifference : `Last ${dayDifference} Days`}  `,
+      footer: "Footer",
       location: "/admin/inventory",
     },
   ];
@@ -66,10 +59,6 @@ export default function Dashboard() {
   return (
     <>
       <section className="flex h-full flex-1 flex-col gap-2 p-2 lg:flex-col">
-        <section className="flex items-center gap-2">
-          <h1 className="flex-1 text-xl font-bold text-accent">Dashboard</h1>
-          <DashboardCalendar setDate={setDate} date={date} />
-        </section>
         {loading && <CustomSkeleton times={50} />}
         {error && <div className="flex flex-col">{error.message}</div>}
         {!loading && !error && (
@@ -100,12 +89,11 @@ export default function Dashboard() {
             <section className="flex flex-grow flex-col justify-between gap-2 outline lg:flex-row">
               <DashboardCards
                 className="flex-1 text-white ring-1 ring-black dark:ring-neutral-800"
-                // content={<CustomBar date={date} />}
-                content={<CustomBarChart date={date} />}
+                content={<CustomBarChart />}
               />
               <DashboardCards
                 className="flex-1 text-white ring-1 ring-black dark:ring-neutral-800"
-                content={<CustomAreaChart date={date} />}
+                content={<CustomAreaChart />}
               />
             </section>
           </>

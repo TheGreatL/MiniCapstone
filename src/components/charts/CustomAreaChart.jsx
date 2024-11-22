@@ -33,32 +33,13 @@ const chartConfig = {
   },
 };
 
-export default function CustomAreaChart({ date }) {
+export default function CustomAreaChart() {
   return (
     <>
       <DashboardCards
         onClick={() => {}}
-        title={
-          <p className="stat-title flex-1 font-bold text-black">
-            Sales
-          </p>
-        }
-        description={
-          <span className="stat-desc">
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
-                </>
-              ) : (
-                format(date.from, "LLL dd, y")
-              )
-            ) : (
-              <span>Pick a date</span>
-            )}
-          </span>
-        }
+        title={<p className="stat-title flex-1 font-bold text-black">Sales</p>}
+        description={<span>Description</span>}
         content={
           <span className="stat-value text-black">
             {

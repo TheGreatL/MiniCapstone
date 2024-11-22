@@ -8,12 +8,12 @@ export default function NavigationBar({ triggerButton }) {
       <div className="navbar bg-base-300">
         <div className="navbar-start">{triggerButton}</div>
         <div className="hidden lg:navbar-center lg:block">
-          <span className="font-bold uppercase tracking-wider text-accent md:text-lg lg:text-2xl">
-            STI Merch Admin
+          <span className="font-bold uppercase text-accent md:text-lg lg:text-2xl">
+            STI Merchandise Administrator
           </span>
         </div>
         <div className="navbar-end">
-          <Switch
+          {/* <Switch
             title="Toggle theme"
             onCheckedChange={(value) => {
               if (value) {
@@ -26,7 +26,7 @@ export default function NavigationBar({ triggerButton }) {
               }
               setTheme(value ? "dark" : "light");
             }}
-          />
+          /> */}
         </div>
       </div>
     </div>

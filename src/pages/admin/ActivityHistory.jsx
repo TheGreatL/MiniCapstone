@@ -33,11 +33,6 @@ export default function ActivityHistory() {
           "MMMM dd, y",
         );
         return <div className="text-center">{formattedDate}</div>;
-        // return (
-        //   <div className="text-center">
-        //     {row.getValue("ActivityDateTime").split("T")[0]}
-        //   </div>
-        // );
       },
     },
     {
@@ -62,7 +57,7 @@ export default function ActivityHistory() {
   return (
     <section className="h flex-1 flex-col gap-3 p-2 lg:flex-col">
       <div className="flex flex-1">
-        {loading && <CustomSkeleton times={5} />}
+        {loading && <CustomSkeleton times={100} />}
         {error && (
           <div className="m-auto text-2xl text-white">
             Error: {error.message}
