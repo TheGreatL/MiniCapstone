@@ -16,13 +16,9 @@ import {
 import { Input } from "@/components/ui/input";
 import PropTypes from "prop-types";
 import CustomTable from "./CustomTable";
-import { useUpdate } from "@/hooks/useUpdate";
 
-export default function ActivityHistoryTable({
-  data,
-  columns,
-  input_search = "or_date",
-}) {
+
+export default function ActivityHistoryTable({ data, columns, input_search }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -44,19 +40,13 @@ export default function ActivityHistoryTable({
       rowSelection,
     },
   });
-  const {
-    data: updateData,
-    loading,
-    error,
-    updateValue,
-  } = useUpdate([], "http://localhost:3000/api/orders/update/status/");
 
   return (
     <div className="flex flex-1 flex-col">
       <div className="m-4 flex items-center gap-5">
         <div className="flex flex-1 gap-5">
           <Input
-            placeholder="Filter Activity"
+            placeholder="Search Activity"
             value={table.getColumn(input_search)?.getFilterValue() ?? ""}
             onChange={(event) =>
               table.getColumn(input_search)?.setFilterValue(event.target.value)
@@ -165,7 +155,7 @@ export default function ActivityHistoryTable({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex h-[35rem] overflow-hidden rounded-md bg-white">
+      <div className="flex h-[30rem] overflow-hidden rounded-md bg-white">
         <CustomTable columns={columns} table={table} flexRender={flexRender} />
       </div>
     </div>

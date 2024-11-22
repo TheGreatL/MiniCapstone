@@ -16,7 +16,7 @@ import {
 } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
 import PropTypes from "prop-types";
-import CustomTable from "./CustomTable";
+import CustomTable from "./table/CustomTable";
 import { useUpdate } from "@/hooks/useUpdate";
 import {
   AlertDialog,
@@ -32,12 +32,11 @@ import {
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { format } from "date-fns";
 import { getCurrentDate } from "@/lib/functions";
-import TableToPrint from "../TablePrint";
-export default function OrdersTable({
-  data,
-  columns,
-  input_search = "s_name",
-}) {
+import TableToPrint from "./TablePrint";
+import OrderConfirmationSheet from "../pages/admin/sheets/OrderConfirmationSheet";
+import MakeOrdersheet from "../pages/admin/sheets/MakeOrdersheet";
+
+export default function OrdersTable({ data, columns, input_search }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -65,6 +64,7 @@ export default function OrdersTable({
     error,
     updateValue,
   } = useUpdate([], "http://localhost:3000/api/orders/update/status/");
+  const rowSelected = table.getSelectedRowModel()?.rows;
 
   return (
     <div className="flex flex-1 flex-col">
@@ -94,80 +94,27 @@ export default function OrdersTable({
               }}
             />
           </div>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
+          <MakeOrdersheet
+            trigger={<Button variant="outline">Make Order</Button>}
+          />
+          <OrderConfirmationSheet
+            content={rowSelected.map((row) => row.original)}
+            trigger={
               <Button
-                disabled={table.getSelectedRowModel().rows.length === 0}
                 variant="outline"
-                className="flex-1"
+                disabled={
+                  rowSelected.length === 0 ||
+                  rowSelected.filter(
+                    (row) =>
+                      row.original.status === "ORDER_200" ||
+                      row.original.status === "ORDER_400",
+                  ).length >= 1
+                }
               >
                 Mark Success
               </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently mark
-                  orders as complete.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={async () => {
-                    const rowSelected = table.getSelectedRowModel().rows;
-                    const rowSelectedMap = rowSelected.map((row) => {
-                      rowSelected.forEach((row) => {
-                        console.log(row.id);
-                        console.log(data[row.id]);
-                        data[row.id].status = "ORDER_200";
-                      });
-                      return row.original;
-                    });
-                    await updateValue(rowSelectedMap, "ORDER_200");
-                    console.log(error);
-                  }}
-                >
-                  Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                disabled={table.getSelectedRowModel().rows.length === 0}
-                variant="outline"
-                className="flex-1"
-              >
-                Mark Failed
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently mark
-                  orders as complete.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => {
-                    const rowSelected = table.getSelectedRowModel().rows;
-                    const rowSelectedMap = rowSelected.map(
-                      (row) => row.original,
-                    );
-                    updateValue(rowSelectedMap, "ORDER_400");
-                  }}
-                >
-                  Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            }
+          />
 
           <PDFDownloadLink
             document={

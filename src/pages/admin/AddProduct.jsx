@@ -9,17 +9,81 @@ import SelectModal from "@/components/modals/SelectModal";
 import { usePost } from "@/hooks/usePost";
 import { toast } from "sonner";
 import CustomSkeleton from "@/components/customs/CustomSkeleton";
+import { useFetch } from "@/hooks/useFetch";
+import { Minus, Plus } from "lucide-react";
+import { useForm, useFieldArray } from "react-hook-form";
+
 export default function AddProduct() {
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    getValues,
+    setError,
+
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      productID: "",
+      productName: "",
+      productType: "",
+      productDescription: "",
+      productDefaultPrice: "",
+      productProgram: "",
+      productAttributes: [],
+    },
+  });
+  const { fields, remove, prepend } = useFieldArray({
+    name: "productAttributes",
+    control,
+  });
+
   const [imagePreview, setImagePreview] = useState(null);
 
   const {
-    data: product,
-    loading,
-    error,
+    data: product_info,
+    loading: fetchLoading,
+    error: fetchError,
+  } = useFetch(
+    "http://localhost:3000/api/products/fetch/product-info",
+    [],
+    "Error fetching Products",
+  );
+  const {
+    data: postData,
+    loading: postLoading,
+    error: postError,
+
     postData: postProduct,
   } = usePost("http://localhost:3000/api/products/post/new_product", null);
+  const {
+    value: productType,
+    handleInputChange: handleProductTypeChange,
+    handleInputBlur: handleProductTypeBlur,
+    hasError: productTypeHasError,
+  } = useInput("", (value) => value !== "" && value !== "-");
+  const {
+    value: productProgramID,
+    handleInputChange: handleProductProgramIDChange,
+    handleInputBlur: handleProductProgramIDBlur,
+    hasError: productProgramIDHasError,
+  } = useInput("", (value) => value !== "" && value !== "-");
+  let productTypes = [];
+  let productProgram = [];
+  if (product_info?.data?.length > 0) {
+    productTypes = product_info.data[0]?.map((type) => ({
+      label: type.ProductTypename,
+      value: type.ProductTypeID,
+    }));
+
+    productProgram = product_info.data[1]?.map((type) => ({
+      label: type.ProgramName,
+      value: type.ProgramID,
+    }));
+  }
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -34,415 +98,65 @@ export default function AddProduct() {
       alert("Please upload a valid image file.");
     }
   };
-  const {
-    value: productName,
-    handleInputChange: handleProductNameChange,
-    handleInputBlur: handleProductNameBlur,
-    hasError: productNameHasError,
-  } = useInput("", () => true);
-
-  const {
-    value: productID,
-    handleInputChange: handleProductIDChange,
-    handleInputBlur: handleProductIDBlur,
-    hasError: productIDHasError,
-  } = useInput("", () => true);
-
-  const {
-    value: productDescription,
-    handleInputChange: handleProductDescriptionChange,
-    handleInputBlur: handleProductDescriptionBlur,
-    hasError: productDescriptionHasError,
-  } = useInput("", () => true);
-  const {
-    value: productType,
-    handleInputChange: handleProductTypeChange,
-    handleInputBlur: handleProductTypeBlur,
-    hasError: productTypeHasError,
-  } = useInput("", (value) => value !== "-");
-
-  if (product?.message === "Product Posting successfull" && !error) {
+  if (
+    postData?.message === "Product Posting successfull" &&
+    !postLoading &&
+    !postError
+  ) {
     toast("Created  Product Successful 🎉", {
       className: "m-5",
       description: `Placed Product successfully  `,
-      action: {
-        label: "Undo",
-        onClick: () => console.log("Undo"),
-      },
-    });
-  }
-  if (loading) {
-    <CustomSkeleton times={20} />;
-  }
-
-  async function handleOnSubmit(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const productSizes = formData.getAll("product-sizes");
-    const productPrice = formData.getAll("product-price");
-    const productStocks = formData.getAll("product-stocks");
-    const productVariant = formData.getAll("product-variant");
-    const data = Object.fromEntries(formData.entries());
-    data["product-sizes"] = productSizes;
-    data["product-price"] = productPrice;
-    data["product-variant"] = productVariant;
-    data["product-stocks"] = productStocks;
-
-    const basicProductData = {
-      ProductID: data["product-id"],
-      ProductName: data["product-name"],
-      ProductDescription: data["product-description"],
-      ProductType: data["product-type"],
-      ProductStockID: `${data["product-id"]}_STOCK`,
-    };
-    const formatPostProduct = (productType) => {
-      if (
-        productType === "GENERAL_TOP_ATTIRE" ||
-        productType === "GENERAL_BOTTOM_ATTIRE" ||
-        productType === "OTHER_PRODUCTS"
-      ) {
-        const variantsData = data["product-variant"].map((variant) => {
-          const array = data["product-sizes"].map((size, index) => {
-            return {
-              ProductSizeID: size,
-              ProductPrice: data["product-price"][index],
-              ProductStockLeft: data["product-stocks"][index],
-              productVariant: variant || "NULL",
-            };
-          });
-          return [...array];
-        });
-        return {
-          ...basicProductData,
-          ProductVariants: variantsData.reduce((acc, curr) => {
-            return acc.concat(curr);
-          }, []),
-        };
-      } else if (
-        productType === "MISCELLANEOUS" ||
-        productType === "UNIFORM_ACCESSORIES"
-      ) {
-        const variantsData = [
-          {
-            ProductSizeID: "NULL",
-            ProductPrice: data["product-price"][0],
-            ProductStockLeft: data["product-stocks"][0],
-            productVariant: "NULL",
-          },
-        ];
-        return {
-          ...basicProductData,
-          ProductVariants: variantsData,
-        };
-      } else {
-        const variantsData = data["product-sizes"].map((size, index) => {
-          return {
-            ProductSizeID: size,
-            ProductPrice: data["product-price"][index],
-            ProductStockLeft: data["product-stocks"][index],
-            productVariant: data["product-variant"][index] || "NULL",
-          };
-        });
-        return {
-          ...basicProductData,
-          ProductVariants: variantsData,
-        };
-      }
-    };
-    await postProduct(formatPostProduct(data["product-type"]));
-    //  console.log(
-    //   "reconstructData",
-    //   formatPostProduct(data["product-type"]),
-    // );
-  }
-
-  const customInputs = [];
-
-  if (
-    productType === "GENERAL_TOP_ATTIRE" ||
-    productType === "GENERAL_BOTTOM_ATTIRE"
-  ) {
-    const genderOptions = [
-      { label: "Male", value: "ML" },
-      { label: "Female", value: "FM" },
-    ];
-    customInputs.push({
-      id: "product-gender",
-      value: (
-        <div className="flex flex-wrap gap-5">
-          {genderOptions.map((size) => (
-            <div
-              key={size.value}
-              className="flex items-center justify-center gap-5"
-            >
-              <input
-                type="checkbox"
-                id={size.value}
-                name="product-variant"
-                value={size.value}
-                className="checkbox-accent checkbox"
-              />
-              <label htmlFor={size.value} className="label-text text-white">
-                {size.label}
-              </label>
-            </div>
-          ))}
-        </div>
-      ),
-    });
-  }
-  // if (
-  //   productType !== "UNIFORM_ACCESSORIES" &&
-  //   productType !== "MISCELLANEOUS" &&
-  //   productType !== "OTHER_PRODUCTS" &&
-  //   productType !== "-"
-  // ) {
-  //   const sizes = [
-  //     { label: "Small", value: "S", price: "S-Price", stock: "S-Stock" },
-  //     { label: "Medium", value: "M", price: "M-Price", stock: "M-Stock" },
-  //     { label: "Large", value: "L", price: "L-Price", stock: "L-Stock" },
-  //     {
-  //       label: "Extra Large",
-  //       value: "XL",
-  //       price: "XL-Price",
-  //       stock: "XL-Stock",
-  //     },
-  //     {
-  //       label: "2 Extra Large",
-  //       value: "2XL",
-  //       price: "2XL-Price",
-  //       stock: "2XL-Stock",
-  //     },
-  //     {
-  //       label: "3 Extra Large",
-  //       value: "3XL",
-  //       price: "3XL-Price",
-  //       stock: "3XL-Stock",
-  //     },
-  //     {
-  //       label: "4 Extra Large",
-  //       value: "4XL",
-  //       price: "4XL-Price",
-  //       stock: "4XL-Stock",
-  //     },
-  //     {
-  //       label: "5 Extra Large",
-  //       value: "5XL",
-  //       price: "5XL-Price",
-  //       stock: "5XL-Stock",
-  //     },
-  //     {
-  //       label: "6 Extra Large",
-  //       value: "6XL",
-  //       price: "6XL-Price",
-  //       stock: "6XL-Stock",
-  //     },
-  //     {
-  //       label: "7 Extra Large",
-  //       value: "7XL",
-  //       price: "7XL-Price",
-  //       stock: "7XL-Stock",
-  //     },
-  //   ];
-  //   customInputs.push({
-  //     id: "product-sizes",
-  //     value: (
-  //       <div className="flex h-[40rem] flex-col flex-wrap gap-5 text-white">
-  //         <span className="text-lg font-bold">Product Sizes</span>
-  //         {sizes.map((size) => (
-  //           <div
-  //             key={size.value}
-  //             className="flex items-center justify-center gap-5"
-  //           >
-  //             <input
-  //               type="checkbox"
-  //               id={size.value}
-  //               name={size.value}
-  //               value={size.value}
-  //               className="checkbox-accent checkbox"
-  //             />
-  //             <label htmlFor={size.value} className="label-text text-white">
-  //               {size.label}
-  //             </label>
-  //             <input
-  //               type="number"
-  //               id={size.value}
-  //               name={size.stock}
-  //               placeholder="Product Stocks"
-  //               className="input input-bordered w-full text-black"
-  //             />
-  //             <input
-  //               type="number"
-  //               id={size.value}
-  //               name={size.price}
-  //               placeholder="Product Price"
-  //               className="input input-bordered w-full text-black"
-  //             />
-  //           </div>
-  //         ))}
-  //       </div>
-  //     ),
-  //   });
-  // }
-  if (
-    productType !== "UNIFORM_ACCESSORIES" &&
-    productType !== "MISCELLANEOUS" &&
-    productType !== "OTHER_PRODUCTS" &&
-    productType !== "-"
-  ) {
-    const sizes = [
-      { label: "Small", value: "S" },
-      { label: "Medium", value: "M" },
-      { label: "Large", value: "L" },
-      { label: "Extra Large", value: "XL" },
-      { label: "2 Extra Large", value: "2XL" },
-      { label: "3 Extra Large", value: "3XL" },
-      { label: "4 Extra Large", value: "4XL" },
-      { label: "5 Extra Large", value: "5XL" },
-      { label: "6 Extra Large", value: "6XL" },
-      { label: "7 Extra Large", value: "7XL" },
-    ];
-    customInputs.push({
-      id: "product-sizes",
-      value: (
-        <div className="flex h-[40rem] flex-col flex-wrap gap-5 text-white">
-          <span className="text-lg font-bold">Product Sizes</span>
-          {sizes.map((size) => (
-            <div
-              key={size.value}
-              className="flex items-center justify-center gap-5"
-            >
-              <input
-                type="checkbox"
-                id={size.value}
-                name="product-sizes"
-                value={size.value}
-                className="checkbox-accent checkbox"
-              />
-              <label htmlFor={size.value} className="label-text text-white">
-                {size.label}
-              </label>
-              <input
-                type="number"
-                id={size.value}
-                name="product-stocks"
-                placeholder="Product Stocks"
-                className="input input-bordered w-full text-black"
-              />
-              <input
-                type="number"
-                id={size.value}
-                name="product-price"
-                placeholder="Product Price"
-                className="input input-bordered w-full text-black"
-              />
-            </div>
-          ))}
-        </div>
-      ),
-    });
-  }
-  if (
-    productType === "UNIFORM_ACCESSORIES" ||
-    productType === "MISCELLANEOUS"
-  ) {
-    customInputs.push({
-      id: "stocks-only",
-      value: (
-        <div className="flex items-center justify-center gap-5">
-          <input
-            type="number"
-            name="product-stocks"
-            placeholder="Product Stocks"
-            className="input input-bordered w-full text-black"
-          />
-          <input
-            type="number"
-            name="product-price"
-            placeholder="Product Price"
-            className="input input-bordered w-full text-black"
-          />
-        </div>
-      ),
-    });
-  }
-  if (productType === "OTHER_PRODUCTS") {
-    const sizes = [
-      { label: "11oz", value: "11oz" },
-      { label: "30oz", value: "30oz" },
-      { label: "40oz", value: "40oz" },
-    ];
-    const colorsOptions = [
-      { label: "Blue", value: "BL" },
-      { label: "Brown", value: "BR" },
-      { label: "Green", value: "GR" },
-      { label: "Grey", value: "GY" },
-      { label: "Orange", value: "OR" },
-      { label: "Pink", value: "PK" },
-      { label: "Purple", value: "PL" },
-      { label: "Red", value: "RD" },
-      { label: "White", value: "WH" },
-      { label: "Yellow", value: "YL" },
-    ];
-    customInputs.push({
-      id: "other-product-sizes",
-      value: (
-        <div className="flex h-[20rem] flex-col flex-wrap gap-5 text-white">
-          <div className="flex flex-wrap gap-5">
-            {colorsOptions.map((color) => (
-              <div
-                key={color.value}
-                className="flex items-center justify-center gap-5"
-              >
-                <input
-                  type="checkbox"
-                  id={color.value}
-                  name="product-variant"
-                  value={color.value}
-                  className="checkbox-accent checkbox"
-                />
-                <label htmlFor={color.value} className="label-text text-white">
-                  {color.label}
-                </label>
-              </div>
-            ))}
-          </div>
-          <span className="text-lg font-bold">Product Sizes</span>
-          {sizes.map((size) => (
-            <div key={size.value} className="flex gap-5">
-              <input
-                type="checkbox"
-                id={size.value}
-                name="product-sizes"
-                value={size.value}
-                className="checkbox-accent checkbox"
-              />
-              <label htmlFor={size.value} className="label-text text-white">
-                {size.label}
-              </label>
-              <input
-                type="number"
-                id={size.value}
-                name="product-stocks"
-                placeholder="Product Stocks"
-                className="input input-bordered w-full text-black"
-              />
-              <input
-                type="number"
-                id={size.value}
-                name="product-price"
-                placeholder="Product Price"
-                className="input input-bordered w-full text-black"
-              />
-            </div>
-          ))}
-        </div>
-      ),
     });
   }
 
+  const onNewSubmit = async (data) => {
+    if (
+      productTypeHasError ||
+      productProgramIDHasError ||
+      productType === "" ||
+      productProgramID === ""
+    ) {
+      setError("root", {
+        message: "Please fill all the fields",
+      });
+      return;
+    }
+
+    data.productProgram = productProgramID;
+    data.productType = productType;
+
+    data.productAttributes = data.productAttributes.map((field) => {
+      return {
+        productAttributeName: field.productAttributeName.toUpperCase(),
+        productAttributeValue: field.productAttributeValue.toUpperCase(),
+        productAttributeSize: field.productAttributeSize.toUpperCase(),
+        productAttributePrice: field.productAttributePrice.toFixed(2),
+        productStockID: `${data.productID}_${field.productAttributeValue.toUpperCase()}_${field.productAttributeSize.toUpperCase()}`,
+        productStockQuantity: field.productStockQuantity,
+      };
+    });
+    data.productImage = image;
+
+    const formData = new FormData();
+    formData.append("productImage", data.productImage);
+    formData.append("productID", data.productID);
+    formData.append("productName", data.productName);
+    formData.append("productDescription", data.productDescription);
+    formData.append("productDefaultPrice", data.productDefaultPrice);
+    formData.append("productProgram", data.productProgram);
+    formData.append("productType", data.productType);
+    formData.append(
+      "stringProductAttributes",
+      JSON.stringify(data.productAttributes),
+    );
+    // const dataForm = Object.fromEntries(formData.entries());
+    // console.log("formData", JSON.parse(dataForm.productAttributes));
+
+    await postProduct(formData);
+  };
+  // console.log("post error", postError);
   return (
-    <main className="m-5 flex flex-1 flex-col gap-2 text-white">
+    <main className="m-5 flex flex-1 flex-col gap-2 text-black">
       <div className="flex items-center justify-between">
         <Button
           className="bg-white text-black hover:bg-white/80"
@@ -452,15 +166,18 @@ export default function AddProduct() {
         </Button>
 
         <Button
-          disabled={loading}
+          disabled={postLoading || fetchLoading}
           className="bg-white text-black hover:bg-white/80"
           onClick={() => document.getElementById("submit").click()}
         >
-          Add To Product
+          {postLoading || fetchLoading ? "Posting..." : "Post Product"}
         </Button>
       </div>
-      {error && <div className="text-white">{error?.message}</div>}
 
+      {postError && <div className="text-white">{postError?.message}</div>}
+      {fetchError && <div>{fetchError?.message}</div>}
+
+      {postLoading || (fetchLoading && <CustomSkeleton times={20} />)}
       <ScrollArea className="flex flex-1 flex-col justify-center p-2 pr-0.5">
         <header className="flex flex-col items-center justify-center gap-2 p-2">
           {imagePreview && (
@@ -492,40 +209,66 @@ export default function AddProduct() {
         </header>
         <section>
           <form
-            onSubmit={handleOnSubmit}
+            onSubmit={handleSubmit(onNewSubmit)}
             className="flex flex-col gap-2 px-2 text-black"
           >
+            {errors && errors.root && (
+              <div className="text-white">{errors.root.message}</div>
+            )}
             <Input
-              value={productName}
               labelStyle="text-white"
-              handleOnBlur={handleProductNameBlur}
-              handleOnChange={handleProductNameChange}
-              type="text"
-              id="product-name"
-              placeholder="Product Name"
-              isError={productNameHasError}
-            />
-            <Input
-              value={productID}
-              labelStyle="text-white"
-              handleOnBlur={handleProductIDBlur}
-              handleOnChange={handleProductIDChange}
               type="text"
               id="product-id"
               placeholder="Product ID"
-              isError={productIDHasError}
+              isError={errors.productID}
+              register={{ ...register("productID", { required: true }) }}
             />
+
             <Input
-              value={productDescription}
               labelStyle="text-white"
-              handleOnBlur={handleProductDescriptionBlur}
-              handleOnChange={handleProductDescriptionChange}
+              type="text"
+              id="product-name"
+              placeholder="Product Name"
+              isError={errors.productName}
+              register={{ ...register("productName", { required: true }) }}
+            />
+
+            <Input
+              labelStyle="text-white"
               type="text"
               id="product-description"
               placeholder="Product Description"
-              isError={productDescriptionHasError}
+              isError={errors.productDescription}
+              register={{
+                ...register("productDescription", { required: true }),
+              }}
+            />
+            <Input
+              labelStyle="text-white"
+              type="text"
+              id="product-default-price"
+              placeholder="Product Default Price"
+              isError={errors.productDefaultPrice}
+              register={{
+                ...register("productDefaultPrice", {
+                  required: true,
+                  valueAsNumber: true,
+                  validate: (value) => !isNaN(value) && value > 0,
+                }),
+              }}
             />
 
+            <SelectModal
+              labelStyle="text-white"
+              value={productProgramID}
+              handleInputChange={handleProductProgramIDChange}
+              handleInputBlur={handleProductProgramIDBlur}
+              hasError={productProgramIDHasError}
+              id={"product-program"}
+              placeholder={"Product Program"}
+              className="text-black"
+              options={productProgram}
+            />
             <SelectModal
               labelStyle="text-white"
               value={productType}
@@ -533,37 +276,141 @@ export default function AddProduct() {
               handleInputBlur={handleProductTypeBlur}
               hasError={productTypeHasError}
               id={"product-type"}
+              className="text-black"
               placeholder={"Product Type"}
-              options={[
-                {
-                  label: "Daily Uniform - Top Attire",
-                  value: "TOP_ATTIRE",
-                },
-                {
-                  label: "Daily Uniform - Bottom Attire",
-                  value: "BOTTOM_ATTIRE",
-                },
-                {
-                  label: "Daily Uniform - Accessories",
-                  value: "UNIFORM_ACCESSORIES",
-                },
-                {
-                  label: "Special Uniform - Top Attire",
-                  value: "GENERAL_TOP_ATTIRE",
-                },
-                {
-                  label: "Special Uniform - Bottom Attire",
-                  value: "GENERAL_BOTTOM_ATTIRE",
-                },
-                { label: "Miscellaneous Products", value: "MISCELLANEOUS" },
-                { label: "Other Products", value: "OTHER_PRODUCTS" },
-              ]}
+              options={productTypes}
             />
-            {customInputs.map((input) => (
-              <div className="" key={input.id}>
-                {input.value}
+            <div className="flex flex-col">
+              <div className="space-x-6">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  type="button"
+                  onClick={() => {
+                    const productDefaultPrice = getValues(
+                      "productDefaultPrice",
+                    );
+                    prepend({
+                      productAttributeName: "",
+                      productAttributeValue: "",
+                      productAttributeSize: "",
+                      productAttributePrice: Number(productDefaultPrice),
+                      productStockID: "",
+                      productStockQuantity: "",
+                    });
+                  }}
+                >
+                  <Plus />
+                </Button>
               </div>
-            ))}
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="flex flex-wrap gap-2 border-b-2 border-y-gray-300 pb-5"
+                >
+                  <Input
+                    labelStyle="text-white"
+                    type="text"
+                    id={`product-attribute-name-${index}`}
+                    placeholder="Product Attribute Name"
+                    register={{
+                      ...register(
+                        `productAttributes.${index}.productAttributeName`,
+                        {
+                          required: true,
+                        },
+                      ),
+                    }}
+                    isError={
+                      errors.productAttributes?.[index]?.productAttributeName
+                    }
+                  />
+                  <Input
+                    labelStyle="text-white"
+                    type="text"
+                    id={`product-attribute-value-${index}`}
+                    placeholder="Product Attribute Value"
+                    register={{
+                      ...register(
+                        `productAttributes.${index}.productAttributeValue`,
+                        {
+                          required: true,
+                        },
+                      ),
+                    }}
+                    isError={
+                      errors.productAttributes?.[index]?.productAttributeValue
+                    }
+                  />
+                  <Input
+                    labelStyle="text-white"
+                    type="text"
+                    id={`product-attribute-size-${index}`}
+                    placeholder="Product Attribute Size"
+                    register={{
+                      ...register(
+                        `productAttributes.${index}.productAttributeSize`,
+                        {
+                          required: true,
+                        },
+                      ),
+                    }}
+                    isError={
+                      errors.productAttributes?.[index]?.productAttributeSize
+                    }
+                  />
+                  <Input
+                    labelStyle="text-white"
+                    type="number"
+                    id={`product-attribute-price-${index}`}
+                    placeholder="Product Price"
+                    register={{
+                      ...register(
+                        `productAttributes.${index}.productAttributePrice`,
+                        {
+                          required: true,
+                          valueAsNumber: true,
+                          validate: (value) => !isNaN(value) && value > 0,
+                        },
+                      ),
+                    }}
+                    isError={
+                      errors.productAttributes?.[index]?.productAttributePrice
+                    }
+                  />
+                  <Input
+                    labelStyle="text-white"
+                    type="number"
+                    id={`product-stock-quantity-${index}`}
+                    placeholder="Product Stock Quantity"
+                    register={{
+                      ...register(
+                        `productAttributes.${index}.productStockQuantity`,
+                        {
+                          required: true,
+                          valueAsNumber: true,
+                          validate: (value) => !isNaN(value) && value > 0,
+                        },
+                      ),
+                    }}
+                    isError={
+                      errors.productAttributes?.[index]?.productStockQuantity
+                    }
+                  />
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    type="button"
+                    className="self-center"
+                    disabled={index <= 0}
+                    onClick={() => remove(index)}
+                  >
+                    <Minus />
+                  </Button>
+                </div>
+              ))}
+            </div>
+
             <button className="hidden" id="submit"></button>
           </form>
         </section>

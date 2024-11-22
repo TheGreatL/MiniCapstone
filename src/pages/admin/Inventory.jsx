@@ -1,127 +1,128 @@
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import CustomSelect from "@/components/customs/CustomSelect";
-import { Button } from "@/components/ui/button";
-import ProcessOrderModal from "@/components/modals/ProcessOrderModal";
 import { useFetch } from "@/hooks/useFetch";
-import { useRef } from "react";
 import CustomSkeleton from "@/components/customs/CustomSkeleton";
-import { useState } from "react";
-import Products from "@/components/Products";
-import { filterData } from "@/lib/functions";
-import { handleOnPostOrder } from "@/lib/handleData";
-import { usePost } from "@/hooks/usePost";
-import { toast } from "sonner";
-import { ShoppingCart } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+
+import InventoryTable from "@/components/table/InventoryTable";
+import { Button } from "@/components/ui/button";
+import { formatCurrency } from "@/lib/functions";
 export default function Inventory() {
-  const navigate = useNavigate();
-  const processOrderModalRef = useRef(null);
-  const [selectedProduct, setSelectedProduct] = useState({});
-  const [search, setSearch] = useState("");
-  const { data, loading, error } = useFetch(
-    "http://localhost:3000/api/products/fetch",
-    [],
-  );
   const {
-    data: postedData,
-    loading: postLoading,
-    error: postError,
-    postData: postOrder,
-  } = usePost(
-    "http://localhost:3000/api/products/post_order",
-    [],
-    "Error posting order",
-  );
-
-  function handleSearchProductReset() {
-    setSearch("");
-  }
-  async function handleOrderSubmit(event, selectedProduct, action) {
-    const formData = new FormData(event.target);
-    if (action === "ProcessOrder") {
-      await postOrder(handleOnPostOrder(formData, selectedProduct));
-    } else {
-      console.log("Added To Cart");
-    }
-    handleSearchProductReset();
-  }
-  function handleSearchProduct(event) {
-    setSearch(event.target.value);
-  }
-  function handleResetSelectedProduct() {
-    setSelectedProduct({});
-  }
-
-  function handleProcessOrder(product, action) {
-    setSelectedProduct(product);
-    processOrderModalRef.current.open(action);
-  }
-  const filteredData = filterData(data.data ? data.data : [], search);
-
-  const numSelect = [
-    { id: 1, value: "ICT" },
-    { id: 2, value: "BSTM" },
-    { id: 3, value: "BSBA" },
-    { id: 4, value: "BACOMM" },
-    { id: 5, value: "BSHM" },
-    { id: 6, value: "BSMOM" },
-    { id: 7, value: "OTHER UNIFORMS" },
-  ];
-
-  if (postLoading) {
-    return <CustomSkeleton times={20} />;
-  }
-  if (postedData?.message === "Order received successfully!" && !postLoading) {
-    toast("Order Process Successful 🎉", {
-      className: "m-5",
-      description: `Placed order successfully for ${postedData.data.productID} `,
-      action: {
-        label: "Undo",
-        onClick: () => console.log("Undo"),
+    data: fetchData,
+    loading,
+    error,
+  } = useFetch("http://localhost:3000/api/products/fetch", []);
+  // console.log(fetchData.data);
+  const inventoryColumns = [
+    {
+      accessorKey: "ProductName",
+      header: () => <div className="text-center">Product Name</div>,
+      cell: ({ row }) => {
+        const product_name = row.getValue("ProductName");
+        return <div className="text-left">{product_name}</div>;
       },
-    });
-  }
+    },
+    {
+      accessorKey: "ProductTypeID",
+      header: () => <div className="text-center"> Type</div>,
+      cell: ({ row }) => {
+        const product_type = row.getValue("ProductTypeID");
+        return <div className="text-center">{product_type}</div>;
+      },
+    },
+    {
+      accessorKey: "ProgramLevel",
+      header: () => <div className="text-center">Level</div>,
+      cell: ({ row }) => {
+        const product_level = row.getValue("ProgramLevel");
+
+        return <div className="text-left">{product_level}</div>;
+      },
+    },
+    {
+      accessorKey: "ProductProgram",
+      header: () => <div className="text-center"> Program</div>,
+      cell: ({ row }) => {
+        const product_program = row.getValue("ProductProgram");
+
+        return <div className="text-center">{product_program}</div>;
+      },
+    },
+    {
+      accessorKey: "P_AttributeValue",
+      header: () => <div className="text-center">Variant </div>,
+      cell: ({ row }) => {
+        const variant_name = row.getValue("P_AttributeValue");
+
+        return <div className="text-center">{variant_name}</div>;
+      },
+    },
+    {
+      accessorKey: "P_AttributeSize",
+      header: () => <div className="text-center">Size</div>,
+      cell: ({ row }) => {
+        const size_name = row.getValue("P_AttributeSize");
+        return <div className="text-center">{size_name}</div>;
+      },
+    },
+    {
+      accessorKey: "P_AttributePrice",
+      header: () => <div className="text-center">Price</div>,
+      cell: ({ row }) => {
+        const product_price = row.getValue("P_AttributePrice");
+        return (
+          <span className="text-center font-semibold">
+            {formatCurrency(product_price || 0)}
+          </span>
+        );
+      },
+    },
+
+    {
+      accessorKey: "Product_StockLeft",
+      header: () => <div className="text-center">Stock Left</div>,
+      cell: ({ row }) => {
+        const product_stock = row.getValue("Product_StockLeft");
+        return <div className="text-center">{product_stock} pcs</div>;
+      },
+    },
+
+    {
+      accessorKey: "Product_StockCondition",
+      header: () => <div className="text-center">Stock Level </div>,
+      cell: ({ row }) => {
+        const product_status = row.getValue("Product_StockCondition");
+        let badgeColor = "";
+        if (product_status === "HIGH") badgeColor = "badge-success";
+        else if (product_status === "MEDIUM") badgeColor = "badge-info";
+        else if (product_status === "LOW") badgeColor = "badge-waring";
+        else badgeColor = "badge-error";
+        return (
+          <div className="flex justify-center">
+            <span
+              className={`badge font-semibold tracking-wider text-white ${badgeColor}`}
+            >
+              {product_status}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      id: "product-replenishment",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const product_stock = row.getValue("Product_StockLeft");
+        const productAttributeID = row.original.P_StockID;
+
+        return <Button variant="outline">Receive</Button>;
+      },
+    },
+  ];
 
   return (
     <>
-      {postError && <div className="text-white">{postError?.message}</div>}
-      <ProcessOrderModal
-        handleOrderSubmit={handleOrderSubmit}
-        handleResetSelectedProduct={handleResetSelectedProduct}
-        selectedProduct={selectedProduct}
-        ref={processOrderModalRef}
-      />
       <section className="flex flex-1 flex-col gap-3 p-2 text-accent lg:flex-col">
         <div className="flex flex-1 flex-col gap-2 overflow-hidden">
-          <div className="m-5 flex items-center gap-2 text-black">
-            <Input
-              onChange={handleSearchProduct}
-              placeholder="Search..."
-              className="flex-1"
-            />
-
-            <div className="flex flex-1 flex-col items-center gap-5 lg:flex-row">
-              <CustomSelect
-                options={numSelect}
-                onItemSelected={() => {}}
-                label={"Programs"}
-              />
-
-              <Button
-                onClick={() => navigate("/admin/inventory/add-product")}
-                className="bg-accent text-black duration-300 hover:bg-gray-200"
-              >
-                Add Product
-              </Button>
-              <Button
-                size="lg"
-                className="bg-accent text-black duration-300 hover:bg-gray-200"
-              >
-                <ShoppingCart />
-              </Button>
-            </div>
-          </div>
           <ScrollArea className="flex-1 pr-0.5">
             <div className="flex flex-wrap justify-evenly gap-5 pt-2 text-black">
               {loading && (
@@ -135,14 +136,13 @@ export default function Inventory() {
                 </div>
               )}
 
-              {filteredData.length !== 0 &&
-                filteredData.map((product) => (
-                  <Products
-                    key={product.ProductID}
-                    product={product}
-                    handleProcessOrder={handleProcessOrder}
-                  />
-                ))}
+              {!loading && !error && (
+                <InventoryTable
+                  data={fetchData.data === undefined ? [] : fetchData.data}
+                  columns={inventoryColumns}
+                  input_search="ProductName"
+                />
+              )}
             </div>
           </ScrollArea>
         </div>

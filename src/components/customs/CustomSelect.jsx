@@ -20,11 +20,11 @@ export default function CustomSelect({ label, options, onItemSelected }) {
           <SelectLabel>{label}</SelectLabel>
           {options.map((item) => (
             <SelectItem
-              key={item.id}
+              key={item.value}
               className="cursor-pointer"
-              value={item.id}
+              value={item.value}
             >
-              {item.value}
+              {item.label}
             </SelectItem>
           ))}
         </SelectGroup>

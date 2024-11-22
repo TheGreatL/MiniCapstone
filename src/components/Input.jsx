@@ -1,38 +1,37 @@
 import PropTypes from "prop-types";
 export default function Input({
-  value,
+  // value,
   type,
   id,
   labelStyle = "text-black",
-
-  handleOnBlur,
-  handleOnChange,
+  register,
+  // handleOnBlur,
+  // handleOnChange,
   placeholder,
   className,
   isError,
   ...props
 }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 p-2">
       <label className={`label label-text ${labelStyle}`} htmlFor={id}>
         {placeholder}
       </label>
       <input
         name={id}
-        value={value}
+        // value={value}
         id={id}
+        {...register}
         type={type}
         placeholder={placeholder}
         {...props}
-        onBlur={handleOnBlur}
-        onChange={handleOnChange}
         className={`input input-bordered ${className} ${
           isError && "input-error"
         }`}
       />
       {isError && (
         <label className="label-text text-error" htmlFor={id}>
-          Error
+          {isError.message ? isError.message : "Error"}
         </label>
       )}
     </div>
@@ -45,7 +44,8 @@ Input.propTypes = {
   handleOnChange: PropTypes.func,
   placeholder: PropTypes.string,
   className: PropTypes.string,
-  isError: PropTypes.bool,
+  isError: PropTypes.any || PropTypes.object,
   value: PropTypes.any,
   labelStyle: PropTypes.string,
+  register: PropTypes.object,
 };

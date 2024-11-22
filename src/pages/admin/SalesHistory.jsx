@@ -1,178 +1,186 @@
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { formatCurrency } from "@/lib/functions";
-import { MoreHorizontal } from "lucide-react";
 import SalesHistoryTable from "@/components/table/SalesHistoryTable";
+import { useFetch } from "@/hooks/useFetch";
+import CustomSkeleton from "@/components/customs/CustomSkeleton";
+import DashboardCalendar from "@/components/DashboardCalendar";
+
+import { useState } from "react";
+import { getCurrentDate } from "@/lib/functions";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 export default function SalesHistory() {
-  const OrderStatusData = [
-    {
-      or_date: "2024-04-01",
-      or_no: "95730102024309924",
-
-      sales: 20000,
-      total: 200000,
-    },
-    {
-      or_date: "2023-05-01",
-      or_no: "95730102024309925",
-      sales: 20000,
-      total: 200000,
-    },
-    {
-      or_date: "2023-04-01",
-      or_no: "95730102024309926",
-      sales: 2000,
-      total: 20000,
-    },
-    {
-      or_date: "2023-04-01",
-      or_no: "95730102024309927",
-      sales: 2000,
-      total: 20000,
-    },
-    {
-      or_date: "2023-04-01",
-      or_no: "95730102024309928",
-      sales: 200000,
-      total: 200000,
-    },
-    {
-      or_date: "2023-04-01",
-      or_no: "95730102024309929",
-      sales: 200000,
-      total: 200000,
-    },
-    {
-      or_date: "2023-04-01",
-      or_no: "957301020243099210",
-      sales: 200000,
-      total: 200000,
-    },
-    {
-      or_date: "2023-04-01",
-      or_no: "957301020243099211",
-      sales: 2000000,
-      total: 20000000,
-    },
-    {
-      or_date: "2023-04-01",
-      or_no: "9573010202430992",
-      sales: 200000,
-      total: 200000,
-    },
-  ];
-
+  const navigate = useNavigate();
   const SalesHistoryColumns = [
     {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
-      accessorKey: "or_no",
-      header: () => <div className="text-center">OR NO</div>,
+      accessorKey: "PaymentDate",
+      header: () => <div className="flex justify-center">Payment Date</div>,
       cell: ({ row }) => {
-        const or_no = row.getValue("or_no");
-        return <div className="text-center">{or_no}</div>;
-      },
-    },
-    {
-      accessorKey: "or_date",
-      header: ({ column }) => {
-        return <div className="flex justify-center">Or Date</div>;
-      },
-      cell: ({ row }) => {
-        const formattedDate = format(row.getValue("or_date"), "MMM dd, y");
+        const formattedDate = format(row.getValue("PaymentDate"), "MMM dd, y");
 
         return <div className="text-center">{formattedDate}</div>;
       },
     },
 
     {
-      accessorKey: "sales",
+      accessorKey: "OrderID",
+      header: () => <div className="text-center">Order Number</div>,
+      cell: ({ row }) => {
+        const or_no = row.getValue("OrderID");
+        return <div className="text-center">{or_no}</div>;
+      },
+    },
+    {
+      accessorKey: "OrderDate",
+      header: () => <div className="flex justify-center">Order Date</div>,
+      cell: ({ row }) => {
+        const formattedDate = format(row.getValue("OrderDate"), "MMM dd, y");
+
+        return <div className="text-center">{formattedDate}</div>;
+      },
+    },
+    {
+      accessorKey: "UserID",
+      header: () => <div className="text-center">Student ID</div>,
+      cell: ({ row }) => {
+        const transaction_person_id = `${row.getValue("UserID")}`;
+        return <div className="text-center">{transaction_person_id}</div>;
+      },
+    },
+    {
+      accessorKey: "UserFName",
+      header: () => <div className="text-center">Student Name</div>,
+      cell: ({ row }) => {
+        const transaction_person = `${row.getValue("UserFName")} ${row.original.UserLName}`;
+        return <div className="text-center">{transaction_person}</div>;
+      },
+    },
+
+    {
+      accessorKey: "PaymentID",
+      header: () => <div className="text-center">PaymentID</div>,
+      cell: ({ row }) => {
+        const paymentID = row.getValue("PaymentID");
+
+        return <div className="text-left font-medium">{paymentID}</div>;
+      },
+    },
+    {
+      accessorKey: "PaymentAmount",
       header: () => <div className="text-center">Sales</div>,
       cell: ({ row }) => {
-        const sales = parseFloat(row.getValue("sales"));
+        const sales = parseFloat(row.getValue("PaymentAmount"));
         const formatted = formatCurrency(sales);
 
         return <div className="text-left font-medium">{formatted}</div>;
       },
     },
-
     {
-      accessorKey: "total",
-      header: () => <div className="text-center">Total</div>,
+      accessorKey: "ActivityActor",
+      header: () => <div className="text-center">Transaction Actor ID</div>,
       cell: ({ row }) => {
-        const total = parseFloat(row.getValue("total"));
-        const formatted = formatCurrency(total);
-        return <div className="text-left font-medium">{formatted}</div>;
+        const actor = row.getValue("ActivityActor");
+
+        return <div className="text-left">{actor}</div>;
       },
     },
     {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const payment = row.original;
-
+        const orderNumber = row.getValue("OrderID");
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(payment.id)}
-              >
-                Copy payment ID
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button
+            variant="outline"
+            onClick={() =>
+              navigate(`/admin/orders/order-details/${orderNumber}`)
+            }
+          >
+            Details
+          </Button>
         );
       },
     },
+    // {
+    //   id: "actions",
+    //   enableHiding: false,
+    //   cell: ({ row }) => {
+    //     const payment = row.original;
+
+    //     return (
+    //       <DropdownMenu>
+    //         <DropdownMenuTrigger asChild>
+    //           <Button variant="ghost" className="h-8 w-8 p-0">
+    //             <span className="sr-only">Open menu</span>
+    //             <MoreHorizontal className="h-4 w-4" />
+    //           </Button>
+    //         </DropdownMenuTrigger>
+    //         <DropdownMenuContent align="end">
+    //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+    //           <DropdownMenuItem
+    //             onClick={() => navigator.clipboard.writeText(payment.id)}
+    //           >
+    //             Copy payment ID
+    //           </DropdownMenuItem>
+    //           <DropdownMenuSeparator />
+    //           <DropdownMenuItem>View customer</DropdownMenuItem>
+    //           <DropdownMenuItem>View payment details</DropdownMenuItem>
+    //         </DropdownMenuContent>
+    //       </DropdownMenu>
+    //     );
+    //   },
+    // },
   ];
+
+  const [date, setDate] = useState();
+  const {
+    data: salesHistoyData,
+    loading,
+    error,
+  } = useFetch(
+    `http://localhost:3000/api/sales/fetch?from=${date?.from || getCurrentDate()}&to=${date?.to || getCurrentDate()}`,
+    [],
+    "Error fetching Sales History",
+  );
+  // console.log("salesHistoyData", salesHistoyData);
+  console.log("salesHistoyData", loading);
   return (
     <section className="h flex-1 flex-col gap-3 p-2 lg:flex-col">
-      <div className="flex flex-1">
-        <SalesHistoryTable
-          data={OrderStatusData}
-          columns={SalesHistoryColumns}
-          input_search="or_no"
-        />
+      <div className="flex flex-1 flex-col">
+        <div className="self-end">
+          <DashboardCalendar setDate={setDate} date={date} />
+        </div>
+        {loading && <CustomSkeleton times={20} />}
+        {error && (
+          <div className="m-auto text-2xl text-white">
+            Error: {error.message}
+          </div>
+        )}
+
+        {!loading && !error && (
+          <>
+            <SalesHistoryTable
+              data={salesHistoyData.data}
+              columns={SalesHistoryColumns}
+              input_search="OrderID"
+            />
+            <div className="flex flex-1">
+              <span className="m-5 flex-1 text-xl font-semibold uppercase text-white">
+                Row Count: {salesHistoyData?.data?.length}
+              </span>
+              <span className="m-5 text-2xl font-semibold uppercase text-white">
+                Total:{" "}
+                {/* {formatCurrency(salesHistoyData?.data[0]?.TotalSales) ===NaN? "0.00" : formatCurrency(salesHistoyData?.data[0]?.TotalSales)} */}
+                {formatCurrency(
+                  salesHistoyData?.data[0]?.TotalSales === undefined
+                    ? "0.00"
+                    : salesHistoyData?.data[0]?.TotalSales,
+                )}
+              </span>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

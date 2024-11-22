@@ -64,22 +64,6 @@ export default function OrderDetailsTable({
             }
             className="flex-1"
           />
-          <div className="flex-1">
-            <CustomSelect
-              label="Order Status"
-              options={[
-                { value: "All", id: "all" },
-                { value: "Completed", id: "ORDER_200" },
-                { value: "On Going", id: "ORDER_600" },
-                { value: "Failed", id: "ORDER_400" },
-              ]}
-              onItemSelected={(value) => {
-                table
-                  .getColumn("OrderStatusID")
-                  ?.setFilterValue(value === "all" ? "" : value);
-              }}
-            />
-          </div>
         </div>
 
         <DropdownMenu>

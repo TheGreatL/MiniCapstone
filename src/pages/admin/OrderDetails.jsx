@@ -1,7 +1,6 @@
 import { useFetch } from "@/hooks/useFetch";
 import { useParams } from "react-router-dom";
 import CustomSkeleton from "@/components/customs/CustomSkeleton";
-import CustomStatusBadge from "@/components/customs/CustomStatusBadge";
 import { formatCurrency } from "@/lib/functions";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import OrderBreakdownTable from "@/components/table/OrderDetailsTable";
 import { ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 export default function OrderDetails() {
   const navigate = useNavigate();
   const { orderId } = useParams();
@@ -63,18 +63,18 @@ export default function OrderDetails() {
       },
     },
     {
-      accessorKey: "ProductVariantID",
+      accessorKey: "P_AttributeValue",
       header: () => <div className="text-center">Product Variant</div>,
       cell: ({ row }) => {
-        const productVariantID = row.getValue("ProductVariantID");
+        const productVariantID = row.getValue("P_AttributeValue");
         return <div className="text-center">{productVariantID}</div>;
       },
     },
     {
-      accessorKey: "ProductSizeID",
+      accessorKey: "P_AttributeSize",
       header: () => <div className="text-center">Product Size</div>,
       cell: ({ row }) => {
-        const productSizeID = row.getValue("ProductSizeID");
+        const productSizeID = row.getValue("P_AttributeSize");
         return <div className="text-center">{productSizeID}</div>;
       },
     },
@@ -91,21 +91,28 @@ export default function OrderDetails() {
       accessorKey: "OrderStatusID",
       header: () => <div className="text-center">Order Status</div>,
       cell: ({ row }) => {
+        const order_status = row.getValue("OrderStatusID");
+        let badgeColor = "";
+        let statusText = "";
+        if (order_status === "ORDER_200") {
+          badgeColor = "badge-success";
+          statusText = "completed";
+        } else if (order_status === "ORDER_600") {
+          badgeColor = "badge-info";
+          statusText = "on going";
+        } else if (order_status === "ORDER_400") {
+          badgeColor = "badge-error";
+          statusText = "failed";
+        }
         return (
           <div className="flex justify-center">
-            <CustomStatusBadge status={row.getValue("OrderStatusID")} />
+            <span
+              className={`badge font-semibold tracking-wider text-white ${badgeColor}`}
+            >
+              {statusText.toUpperCase()}
+            </span>
           </div>
         );
-      },
-    },
-    {
-      accessorKey: "Sales",
-      header: () => <div className="text-center">Sales</div>,
-      cell: ({ row }) => {
-        const sales = parseFloat(row.getValue("Sales"));
-        const formatted = formatCurrency(sales);
-
-        return <div className="text-left font-medium">{formatted}</div>;
       },
     },
 
@@ -113,14 +120,18 @@ export default function OrderDetails() {
       accessorKey: "Total",
       header: () => <div className="text-center">Total</div>,
       cell: ({ row }) => {
-        const total = parseFloat(row.getValue("Total"));
+        // console.log(row);
+        const total =
+          parseFloat(row.original.P_AttributePrice) *
+          parseFloat(row.getValue("OrderQuantity"));
+
         const formatted = formatCurrency(total);
         return <div className="text-left font-medium">{formatted}</div>;
       },
     },
   ];
   if (loading) {
-    return <CustomSkeleton times={20} />;
+    return <CustomSkeleton times={100} />;
   }
   return (
     <main className="m-5 flex flex-1 flex-col gap-2 text-white">
@@ -130,37 +141,39 @@ export default function OrderDetails() {
       >
         <ChevronLeft />
       </Button>
-      <span className="text-center text-2xl font-semibold">
-        Breakdown of{" "}
-        {!error &&
-          !loading &&
-          `${orderDetails[0].UserFirstName} ${orderDetails[0].UserMiddleName} ${orderDetails[0].UserLastName}`}
-        {"`"}s Order
-      </span>
-      <span className="text-center text-2xl font-semibold">
-        Student Number: {!error && !loading && `${orderDetails[0].UserID}`}
-      </span>
-      <span className="text-center text-2xl font-semibold">
-        Student Program:{" "}
-        {!error && !loading && `${orderDetails[0].UserProgram}`}
-      </span>
-      <span className="text-center text-2xl font-semibold">
-        Order Date:{" "}
-        {!error &&
-          !loading &&
-          `${format(orderDetails[0].OrderDate, "MMM dd, y")}`}
-      </span>
-      <span className="text-center text-2xl font-semibold">
-        Order Time: {!error && !loading && `${orderDetails[0].OrderTime}`}
-      </span>
-      {/* <ScrollArea className="z-50 flex h-[20rem] flex-1 flex-col overflow-hidden rounded-lg pr-0.5 pr-5 text-black"> */}
-      <OrderBreakdownTable
-        columns={columnsOrderDetailsColumns}
-        data={orderDetails}
-        error={error}
-        input_search="ProductName"
-      />
-      {/* </ScrollArea> */}
+      {!error && !loading && (
+        <div className="flex flex-col items-start gap-2 self-center text-center">
+          <span className="text-center text-2xl font-semibold">
+            Breakdown of{" "}
+            {`${orderDetails[0].UserFName}  ${orderDetails[0].UserLName}`}
+            {"`"}s Order
+          </span>
+          <span className="text-center text-2xl font-semibold">
+            Student Number: {`${orderDetails[0].UserID}`}
+          </span>
+          <span className="text-center text-2xl font-semibold">
+            Student Program: {`${orderDetails[0].Program[0]}`}
+          </span>
+          <span className="text-center text-2xl font-semibold">
+            Order Date: {`${format(orderDetails[0].OrderDate, "MMM dd, y")}`}
+          </span>
+          <span className="text-center text-2xl font-semibold">
+            Order Time: {`${orderDetails[0].OrderDate.split("T")[1]}`}
+          </span>
+          <span className="text-center text-2xl font-semibold">
+            Order Total: {orderDetails[0].TotalOrder}
+          </span>
+        </div>
+      )}
+
+      <ScrollArea className="z-50 flex h-[20rem] flex-1 flex-col overflow-hidden rounded-lg pr-5 text-black">
+        <OrderBreakdownTable
+          columns={columnsOrderDetailsColumns}
+          data={orderDetails}
+          error={error}
+          input_search="ProductName"
+        />
+      </ScrollArea>
     </main>
   );
 }

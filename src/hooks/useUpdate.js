@@ -1,28 +1,30 @@
 import { useState } from "react";
 import axios from "axios";
 export const useUpdate = (initialValue, urlTemplate) => {
-  const [value, setValue] = useState(initialValue);
+  const [data, setData] = useState(initialValue);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const updateValue = async (newValue,statusID) => {
+  const updateValue = async (newValue) => {
     try {
-      console.log("New Value", newValue);
-      const url = `${urlTemplate}${statusID}`;
-      console.log("URL", url);
+      const url = `${urlTemplate}${newValue.id}`;
       setLoading(true);
       setError(null);
-      const response = axios.put(url, newValue);
-      setValue(response.data);
+      const response = await axios.put(url, newValue);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      setData(response.data);
+      setError(null);
     } catch (error) {
-      setError({ message: error.message });
+      const { error: serverError } = error.response.data;
+      setError({ message: `${serverError} \n ${error.message}` });
     } finally {
       setLoading(false);
     }
   };
   return {
-    value,
+    data,
     updateValue,
     error,
+    setError,
     loading,
   };
 };

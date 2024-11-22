@@ -40,7 +40,7 @@ export default function CustomAreaChart({ date }) {
         onClick={() => {}}
         title={
           <p className="stat-title flex-1 font-bold text-black">
-            Area Chart - Linear
+            Sales
           </p>
         }
         description={

@@ -2,7 +2,6 @@ import { useFetch } from "@/hooks/useFetch";
 import { format } from "date-fns";
 import { formatCurrency } from "@/lib/functions";
 import { ArrowUpDown } from "lucide-react";
-import CustomStatusBadge from "@/components/customs/CustomStatusBadge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,10 +13,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import MyCustomTable from "@/components/table/OrdersTable";
 import CustomSkeleton from "@/components/customs/CustomSkeleton";
 import { useNavigate } from "react-router-dom";
-import OrdersTable from "@/components/table/OrdersTable";
+import OrdersTable from "@/components/OrdersTable";
 export default function OrderStatus() {
   const navigate = useNavigate();
   const {
@@ -35,19 +33,20 @@ export default function OrderStatus() {
 
     for (let i = 0; i < passedData.length; i++) {
       newOrderedData.push({
-        or_date: passedData[i].OrderDate,
+        or_date: passedData[i].OrderDate.split("T")[0],
         or_no: passedData[i].OrderID,
         status: passedData[i].OrderStatusID,
         sales: passedData[i].Sales,
-        total: passedData[i].TotalPrice,
-        s_name: ` ${passedData[i].UserFirstName} ${passedData[i].UserMiddleName} ${passedData[i].UserLastName}`,
-        s_program: passedData[i].UserProgram,
+        total: passedData[i].TotalAmount,
+        s_name: ` ${passedData[i].UserFName} ${passedData[i].UserLName}`,
+        s_program: passedData[i].Program,
         s_no: passedData[i].UserID,
+        order: passedData[i].Order,
       });
     }
   }
+
   reareangeData(orderedData?.data);
-  console.log("orderedData", orderedData);
   const orderStatusColumn = [
     {
       id: "select",
@@ -75,63 +74,25 @@ export default function OrderStatus() {
       accessorKey: "or_date",
       header: ({ column }) => {
         return (
-          <div className="flex justify-center">
+          <div className="flex">
             <Button
               variant="ghost"
-              onClick={() => {
-                column.toggleSorting(column.getIsSorted() === "asc");
-                console.log(column.getIsSorted());
-              }}
+              className="flex-1"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
             >
-              Or Date
+              Order Date
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           </div>
         );
       },
+
       cell: ({ row }) => {
         const formattedDate = format(row.getValue("or_date"), "MMM dd, y");
 
         return <div className="text-center">{formattedDate}</div>;
-      },
-    },
-    {
-      accessorKey: "s_no",
-      header: () => <div className="text-center">Student Number</div>,
-      cell: ({ row }) => {
-        const studentNumber = row.getValue("s_no");
-        return <div className="text-center">{studentNumber}</div>;
-      },
-    },
-    {
-      accessorKey: "s_name",
-
-      header: ({ column }) => {
-        return (
-          <div className="flex justify-center">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                column.toggleSorting(column.getIsSorted() === "asc");
-              }}
-            >
-              Student Name
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        );
-      },
-      cell: ({ row }) => {
-        const name = row.getValue("s_name");
-        return <div className="text-center">{name}</div>;
-      },
-    },
-    {
-      accessorKey: "s_program",
-      header: () => <div className="text-center">Program</div>,
-      cell: ({ row }) => {
-        const program = row.getValue("s_program");
-        return <div className="text-center">{program}</div>;
       },
     },
     {
@@ -146,24 +107,30 @@ export default function OrderStatus() {
       accessorKey: "status",
       header: () => <div className="text-center">Status</div>,
       cell: ({ row }) => {
+        const order_status = row.getValue("status");
+        let badgeColor = "";
+        let statusText = "";
+        if (order_status === "ORDER_200") {
+          badgeColor = "badge-success";
+          statusText = "completed";
+        } else if (order_status === "ORDER_600") {
+          badgeColor = "badge-info";
+          statusText = "on going";
+        } else if (order_status === "ORDER_400") {
+          badgeColor = "badge-error";
+          statusText = "failed";
+        }
         return (
           <div className="flex justify-center">
-            <CustomStatusBadge status={row.getValue("status")} />
+            <span
+              className={`badge font-semibold tracking-wider text-white ${badgeColor}`}
+            >
+              {statusText.toUpperCase()}
+            </span>
           </div>
         );
       },
     },
-    {
-      accessorKey: "sales",
-      header: () => <div className="text-center">Sales</div>,
-      cell: ({ row }) => {
-        const sales = parseFloat(row.getValue("sales"));
-        const formatted = formatCurrency(sales);
-
-        return <div className="text-left font-medium">{formatted}</div>;
-      },
-    },
-
     {
       accessorKey: "total",
       header: () => <div className="text-center">Total</div>,
@@ -173,6 +140,7 @@ export default function OrderStatus() {
         return <div className="text-left font-medium">{formatted}</div>;
       },
     },
+
     {
       id: "actions",
       enableHiding: false,
@@ -180,41 +148,36 @@ export default function OrderStatus() {
         const orderNumber = row.getValue("or_no");
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() =>
-                  navigate(`/admin/orders/order-details/${orderNumber}`)
-                }
-              >
-                View Order Details
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View Order Breakdown</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center justify-center space-x-5">
+            <Button
+              variant="outline"
+              onClick={() =>
+                navigate(`/admin/orders/order-details/${orderNumber}`)
+              }
+            >
+              View Order Details
+            </Button>
+            <Button variant="outline">Order Receipt (PDF)</Button>
+          </div>
         );
       },
     },
   ];
   return (
     <section className="flex h-full flex-1 flex-col gap-3 p-2 lg:flex-col">
-      <div className="flex flex-1">
-        {loading && <CustomSkeleton times={1} />}
-        {error && <div>Error: {error.message}</div>}
+      <div className="flex flex-1 flex-col">
+        {loading && <CustomSkeleton times={20} />}
+        {error && (
+          <div className="m-auto text-2xl text-white">
+            Error: {error.message}
+          </div>
+        )}
+
         {!loading && !error && (
           <OrdersTable
             data={newOrderedData}
             columns={orderStatusColumn}
-            input_search="s_name"
+            input_search="or_no"
           />
         )}
       </div>

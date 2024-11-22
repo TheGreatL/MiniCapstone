@@ -87,8 +87,8 @@ const ProcessOrderModal = forwardRef(function ProcessOrderModal(
             id={"product-variants"}
             placeholder={"Product Gender"}
             options={[
-              { label: "Male", value: "ML" },
-              { label: "Female", value: "FM" },
+              { label: "Male", value: "MALE" },
+              { label: "Female", value: "FEMALE" },
             ]}
           />
         ),

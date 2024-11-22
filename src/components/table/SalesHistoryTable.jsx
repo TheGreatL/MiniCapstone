@@ -16,7 +16,6 @@ import {
 import { Input } from "@/components/ui/input";
 import PropTypes from "prop-types";
 import CustomTable from "./CustomTable";
-import { useUpdate } from "@/hooks/useUpdate";
 
 export default function SalesHistoryTable({
   data,
@@ -44,19 +43,13 @@ export default function SalesHistoryTable({
       rowSelection,
     },
   });
-  const {
-    data: updateData,
-    loading,
-    error,
-    updateValue,
-  } = useUpdate([], "http://localhost:3000/api/orders/update/status/");
 
   return (
     <div className="flex flex-1 flex-col">
       <div className="m-4 flex items-center gap-5">
         <div className="flex flex-1 gap-5">
           <Input
-            placeholder="Filter Sales"
+            placeholder="Search Order Number"
             value={table.getColumn(input_search)?.getFilterValue() ?? ""}
             onChange={(event) =>
               table.getColumn(input_search)?.setFilterValue(event.target.value)
@@ -157,7 +150,7 @@ export default function SalesHistoryTable({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex h-[35rem] overflow-hidden rounded-md bg-white">
+      <div className="flex h-[28rem] overflow-hidden rounded-md bg-white">
         <CustomTable
           columns={columns}
           table={table}

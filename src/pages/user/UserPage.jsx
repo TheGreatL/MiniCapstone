@@ -13,8 +13,9 @@ import {
   Speech,
   Volleyball,
 } from "lucide-react";
-import { Star } from "lucide-react";
-import LOGO from "../../assets/merchapp_logo.jpg";
+import { Search, Bell } from "lucide-react";
+import { Outlet } from "react-router-dom";
+import LOGO from "../../assets/White.png";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -22,78 +23,92 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { useNavigate } from "react-router-dom";
 import { Link, NavLink } from "react-router-dom";
-const sampledata = [
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-];
+
+import { Button } from "@/components/ui/button";
+
 function UserPage() {
+  const navigate = useNavigate();
   const navLinks = [
     {
       label: "All Products Available",
       icon: <ShoppingCart />,
+      path: "/product-categories",
     },
     {
       label: "Hospitality Management",
       icon: <Bed />,
+      path: "/product-categories",
     },
     {
       label: "T-Shirts (Washday,NSTP,Anniversary Shirts)",
       icon: <Shirt />,
+      path: "/product-categories",
     },
     {
       label:
         "Information Technology, Computer Science, Computer Engineering(BSIT,BSCS,BScPE)",
       icon: <Computer />,
+      path: "/product-categories",
     },
     {
       label: "Tourism Management",
       icon: <Plane />,
+      path: "/product-categories",
     },
     {
       label: "Uniform And Pants",
       icon: <Shirt />,
+      path: "/product-categories",
     },
     {
       label: "Business Administration",
       icon: <Calculator />,
+      path: "/product-categories",
     },
     {
       label: "Physical Education",
       icon: <Volleyball />,
+      path: "/product-categories",
     },
     {
       label: "Misscellenous",
       icon: <ShoppingBasketIcon />,
+      path: "/product-categories",
     },
     {
       label: "Arts in Communication",
       icon: <Speech />,
+      path: "/product-categories",
     },
     {
       label: "Senior High School",
       icon: <Baby />,
+      path: "/product-categories",
     },
     {
       label: "Limited Edition Item",
       icon: <LucideDrumstick />,
+      path: "/product-categories",
     },
   ];
 
   return (
-    <main className="flex h-screen flex-1 flex-col gap-3 overflow-hidden bg-primary p-2 text-accent lg:flex-col">
-      {/* <span> UserPage</span>
-      <Link className="btn" to="/login">
-        Login
-      </Link> */}
-      <section className="navbar gap-2 rounded-2xl text-white">
-        <div className="flex items-center">
-          <img src={LOGO} className="btn btn-ghost w-full flex-1" />
-        </div>
-        <div className="flex flex-1 text-black">
+    <main className="flex h-screen flex-1 flex-col gap-3 overflow-hidden bg-gradient-to-b from-[#122A42] to-[#1B408C] p-2 text-accent lg:flex-col">
+      <section className="navbar h-[5rem] gap-2 rounded-2xl">
+        <div className="flex gap-2 text-white">
+          <Button
+            variant="ghost"
+            className="h-full max-w-[5rem] flex-1 p-2 hover:bg-gray-800"
+            onClick={() => navigate("/home")}
+          >
+            <img src={LOGO} />
+          </Button>
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="w-96 transition-all duration-200 ease-in-out hover:bg-opacity-90">
+                <NavigationMenuTrigger className="bg-transparent transition-all duration-200 ease-in-out hover:bg-opacity-90">
                   Categories
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -102,6 +117,7 @@ function UserPage() {
                       {navLinks.map((link) => (
                         <NavLink
                           key={link.label}
+                          to={link.path}
                           className="btn btn-accent flex h-auto min-w-96 flex-1 flex-shrink-0 items-center justify-center transition-all duration-200 hover:scale-105 hover:shadow-lg"
                         >
                           <span>{link.icon}</span>{" "}
@@ -114,9 +130,20 @@ function UserPage() {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
+          <Button variant="ghost" onClick={() => navigate("/whats-new")}>
+            Whats New
+          </Button>
+          <Button variant="ghost" onClick={() => navigate("/favorites")}>
+            Favorites
+          </Button>
         </div>
-
-        <div className="flex-none">
+        <div className="flex flex-1 items-center justify-center text-black">
+          <label className="input input-bordered flex max-w-[40rem] flex-1 items-center gap-2 rounded-3xl">
+            <input type="text" className="grow" placeholder="Search" />
+            <Search />
+          </label>
+        </div>
+        <div className="flex-none space-x-5">
           <div className="dropdown dropdown-end">
             <div
               tabIndex={0}
@@ -125,6 +152,7 @@ function UserPage() {
             >
               <div className="indicator">
                 <ShoppingCart className="h-5 w-5" />
+
                 <span className="badge indicator-item badge-sm">8</span>
               </div>
             </div>
@@ -136,13 +164,20 @@ function UserPage() {
                 <span className="text-lg font-bold">8 Items</span>
                 <span className="text-info">Subtotal: $999</span>
                 <div className="card-actions">
-                  <button className="btn btn-primary btn-block">
+                  <Button
+                    className="flex-1 text-white"
+                    onClick={() => navigate("/cart/12")}
+                  >
                     View cart
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
+          <Button variant="ghost">
+            <Bell />
+            Notification
+          </Button>
           <div className="dropdown dropdown-end">
             <div
               tabIndex={0}
@@ -157,7 +192,6 @@ function UserPage() {
               tabIndex={0}
               className="menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 text-black shadow"
             >
-              
               <li>
                 <a className="justify-between">
                   Profile
@@ -174,47 +208,11 @@ function UserPage() {
           </div>
         </div>
       </section>
-      <ScrollArea className="rounded-2xl bg-white p-0.5 lg:p-2">
-        <div className="flex w-full flex-wrap items-center justify-center gap-2 text-white lg:items-center lg:justify-center lg:gap-5 lg:py-2">
-          {sampledata.map((item) => (
-            <div
-              key={item}
-              className="card w-[10rem] cursor-pointer bg-primary text-white shadow-xl hover:ring-2 hover:ring-black lg:w-[17rem]"
-            >
-              <figure className="p-2 lg:px-4 lg:pt-5">
-                <img
-                  src={AVATAR}
-                  alt="Shoes"
-                  className="h-auto rounded-xl object-contain lg:h-[15rem]"
-                />
-              </figure>
-              <div className="card-body px-0.5 text-center lg:px-2">
-                <div className="card-title text-start">
-                  <h2 className="flex-1 text-start text-xs font-semibold lg:text-lg">
-                    Batchelor of Science In Information Technology Pants
-                  </h2>
-                </div>
-                <span className="text-start text-xs font-bold text-secondary lg:text-base">
-                  $2312.24
-                </span>
 
-                <span className="text-start text-xs">
-                  If a dog chews shoes whose shoes does he choose?
-                </span>
-                <div className="card-actions mt-1 flex justify-center text-xs">
-                  <button className="btn h-2 flex-1 border-0 bg-accent p-0 text-black lg:text-lg">
-                    Add To Cart
-                  </button>
-                  <button className="btn btn-accent h-2 border-0 bg-transparent text-white hover:text-black">
-                    {<Star />}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-          ))}
-        </div>
-      </ScrollArea>
+      <div className="flex flex-1">
+        <Outlet />
+      </div>
+      {/* </ScrollArea> */}
     </main>
   );
 }

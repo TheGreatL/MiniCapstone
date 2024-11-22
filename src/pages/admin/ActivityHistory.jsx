@@ -1,92 +1,60 @@
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { ArrowUpDown } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
 import ActivityHistoryTable from "@/components/table/ActivityHistoryTable";
+import { useFetch } from "@/hooks/useFetch";
+import CustomSkeleton from "@/components/customs/CustomSkeleton";
 export default function ActivityHistory() {
-  const ActivityHistoryData = [
-    {
-      activity_date: "2023-01-01",
-      activity_type: "Order Placed",
-      activity_description: "Order #1234 was placed on 01/01/2023",
-    },
-    {
-      activity_date: "2023-02-01",
-      activity_type: "Order Shipped",
-      activity_description: "Order #1234 was shipped on 02/01/2023",
-    },
-    {
-      activity_date: "2023-03-01",
-      activity_type: "Order Delivered",
-      activity_description: "Order #1234 was delivered on 03/01/2023",
-    },
-  ];
+  const {
+    data: ActivityHistoryData,
+    loading,
+    error,
+  } = useFetch(
+    "http://localhost:3000/api/activity/fetch",
+    [],
+    "Error fetching Activity History",
+  );
+  console.log(ActivityHistoryData);
   const SalesHistoryColumns = [
     {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
-      accessorKey: "activity_date",
-      header: ({ column }) => {
+      accessorKey: "ActivityActor",
+      header: <div className="text-center">Actor ID</div>,
+      cell: ({ row }) => {
         return (
-          <div className="flex justify-center">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                column.toggleSorting(column.getIsSorted() === "asc");
-                console.log(column.getIsSorted());
-              }}
-            >
-              Activity Date
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
+          <div className="text-center">{row.getValue("ActivityActor")}</div>
         );
       },
+    },
+    {
+      accessorKey: "ActivityDateTime",
+      header: <div className="text-center">Activity Date</div>,
       cell: ({ row }) => {
         const formattedDate = format(
-          row.getValue("activity_date"),
+          row.getValue("ActivityDateTime"),
           "MMMM dd, y",
         );
         return <div className="text-center">{formattedDate}</div>;
+        // return (
+        //   <div className="text-center">
+        //     {row.getValue("ActivityDateTime").split("T")[0]}
+        //   </div>
+        // );
       },
     },
     {
-      accessorKey: "activity_type",
-      header: <div className="text-center">Activity Type</div>,
+      accessorKey: "ActivityTitle",
+      header: <div className="text-center">Activity Title</div>,
       cell: ({ row }) => {
         return (
-          <div className="text-center">{row.getValue("activity_type")}</div>
+          <div className="text-center">{row.getValue("ActivityTitle")}</div>
         );
       },
     },
     {
-      accessorKey: "activity_description",
+      accessorKey: "ActivityContent",
       header: <div className="text-center">Activity Description</div>,
       cell: ({ row }) => {
         return (
-          <div className="text-center">
-            {row.getValue("activity_description")}
-          </div>
+          <div className="text-left">{row.getValue("ActivityContent")}</div>
         );
       },
     },
@@ -94,11 +62,68 @@ export default function ActivityHistory() {
   return (
     <section className="h flex-1 flex-col gap-3 p-2 lg:flex-col">
       <div className="flex flex-1">
-        <ActivityHistoryTable
-          data={ActivityHistoryData}
-          columns={SalesHistoryColumns}
-          input_search="activity_date"
-        />
+        {loading && <CustomSkeleton times={5} />}
+        {error && (
+          <div className="m-auto text-2xl text-white">
+            Error: {error.message}
+          </div>
+        )}
+        {!loading && !error && (
+          <Tabs defaultValue="sales-activity" className="flex-1">
+            <TabsList className="flex w-full">
+              <TabsTrigger
+                className="flex-1 data-[state=active]:bg-gray-500 data-[state=active]:text-white"
+                value="sales-activity"
+              >
+                Sales Activity
+              </TabsTrigger>
+              <TabsTrigger
+                className="flex-1 data-[state=active]:bg-gray-500 data-[state=active]:text-white"
+                value="stock-activity"
+              >
+                Stock
+              </TabsTrigger>
+              <TabsTrigger
+                className="flex-1 data-[state=active]:bg-gray-500 data-[state=active]:text-white"
+                value="user-activity"
+              >
+                Users Activity
+              </TabsTrigger>
+              <TabsTrigger
+                className="flex-1 data-[state=active]:bg-gray-500 data-[state=active]:text-white"
+                value="orders-activity"
+              >
+                Orders Activity
+              </TabsTrigger>
+
+              {/* <Button onClick={handleAddTab}>Add Tab</Button> */}
+            </TabsList>
+            <TabsContent value="sales-activity">
+              <ActivityHistoryTable
+                data={ActivityHistoryData.data.filter(
+                  (activity) => activity.ActivityType === "SALES",
+                )}
+                columns={SalesHistoryColumns}
+                input_search="ActivityDateTime"
+              />
+            </TabsContent>
+            <TabsContent value="stock-activity">
+              <span>Stock</span>
+            </TabsContent>
+            <TabsContent value="user-activity">
+              <span>User</span>
+            </TabsContent>
+            <TabsContent value="orders-activity">
+              <ActivityHistoryTable
+                data={ActivityHistoryData.data.filter(
+                  (activity) => activity.ActivityType === "ORDER",
+                )}
+                columns={SalesHistoryColumns}
+                input_search="ActivityDateTime"
+              />
+            </TabsContent>
+          </Tabs>
+        )}
       </div>
     </section>
   );

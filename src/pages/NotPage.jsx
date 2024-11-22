@@ -4,7 +4,7 @@ export default function NotPage() {
   const navigate = useNavigate();
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate("/admin");
+      navigate("/");
     }, 1000);
     return () => {
       clearTimeout(timer);

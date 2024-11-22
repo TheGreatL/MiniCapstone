@@ -12,14 +12,17 @@ export const useFetch = (
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(url);
 
         const json = await response.data;
+        await new Promise((resolve) => setTimeout(resolve, 500));
         setData(json);
-        setLoading(false);
+
         setError(null);
       } catch (error) {
         setError({ message: `${error.message} \n ${errorMessage}` });
+      } finally {
         setLoading(false);
       }
     };
@@ -27,5 +30,5 @@ export const useFetch = (
     fetchData();
   }, [url, errorMessage]);
 
-  return { data, loading, error };
+  return { data, loading, error, setData,setError };
 };

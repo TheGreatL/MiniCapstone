@@ -9,7 +9,7 @@ export default function NavigationBar({ triggerButton }) {
         <div className="navbar-start">{triggerButton}</div>
         <div className="hidden lg:navbar-center lg:block">
           <span className="font-bold uppercase tracking-wider text-accent md:text-lg lg:text-2xl">
-            STI Mech Admin
+            STI Merch Admin
           </span>
         </div>
         <div className="navbar-end">

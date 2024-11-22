@@ -4,12 +4,28 @@ import NavigationBar from "@/components/NavigationHeader";
 import { Dialog } from "@radix-ui/react-dialog";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import CustomSideBar from "@/components/sidebar/CustomSideBar";
+import {
+  Activity,
+  Shirt,
+  ChartPie,
+  House,
+  BadgeDollarSign,
+  Hammer,
+} from "lucide-react";
 export default function AdminPage() {
+  const sidebarContent = [
+    { name: "Dashboard", path: "dashboard", icon: <House /> },
+    { name: "Orders", path: "orders", icon: <ChartPie /> },
+    { name: "Inventory", path: "inventory", icon: <Shirt /> },
+    { name: "Sales History", path: "sales-history", icon: <BadgeDollarSign /> },
+    { name: "Activity History", path: "activity-history", icon: <Activity /> },
+    { name: "Maintenance", path: "maintenance", icon: <Hammer /> },
+  ];
   return (
     <SidebarProvider>
       <Dialog>
         <main className="flex min-h-screen w-full overflow-auto">
-          <CustomSideBar />
+          <CustomSideBar sidebarContent={sidebarContent} />
           <section className="flex h-screen w-full flex-1 flex-col">
             <NavigationBar
               triggerButton={

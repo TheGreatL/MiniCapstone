@@ -43,7 +43,7 @@ export default function CustomBarChart({ date }) {
         onClick={() => {}}
         title={
           <p className="stat-title flex-1 font-bold text-black">
-            Bar Chart - Multiple
+            Most Purchased Products
           </p>
         }
         description={

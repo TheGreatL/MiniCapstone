@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
-import Roboto_Light from "../assets/fonts/Roboto-Light.ttf";
-import Roboto_Black from "../assets/fonts/Roboto-Black.ttf";
+import Roboto_Light from "/fonts/Roboto-Light.ttf";
+import Roboto_Black from "/fonts/Roboto-Black.ttf";
 import {
   Page,
   Text,
@@ -127,7 +127,8 @@ const TableToPrint = ({ data, currentDate = "2021-01-01" }) => {
                 <Text style={styles.tableCell}>{row.s_name}</Text>
               </View>
               <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{row.s_program}</Text>
+            
+                <Text style={styles.tableCell}>{row.s_program[0]}</Text>
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCell}>{row.or_no}</Text>

@@ -4,16 +4,16 @@ export default function CustomSkeleton({ times = 1 }) {
   let skeleton = [];
   for (let i = 0; i < times; i++) {
     skeleton.push(
-      <div key={i} className="flex flex-col space-y-3">
-        <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[200px]" />
-        </div>
+      <div key={i} className="">
+        <Skeleton className="h-[10rem] w-[15rem] rounded-xl" />
       </div>,
     );
   }
-  return <>{skeleton.map((skeletonItem) => skeletonItem)}</>;
+  return (
+    <div className="flex w-full flex-1 flex-wrap gap-2">
+      {skeleton.map((skeletonItem) => skeletonItem)}
+    </div>
+  );
 }
 CustomSkeleton.propTypes = {
   times: PropTypes.number,

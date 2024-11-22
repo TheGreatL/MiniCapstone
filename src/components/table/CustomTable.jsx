@@ -6,8 +6,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { flexRender } from "@tanstack/react-table";
 import PropTypes from "prop-types";
-export default function CustomTable({ table, columns, flexRender }) {
+export default function CustomTable({ table, columns }) {
   return (
     <Table className="flex-1">
       <TableHeader className="sticky top-0 bg-white">

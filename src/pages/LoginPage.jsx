@@ -7,6 +7,9 @@ export default function LoginPage() {
       <Link className="btn" to="/admin">
         Admin
       </Link>
+      <Link className="btn" to="/employee">
+        Employee
+      </Link>
       <Link className="btn" to="/">
         User
       </Link>
